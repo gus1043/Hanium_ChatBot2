@@ -162,11 +162,18 @@ apiRouter.post('/controlbulb-color', async function (req, res) {
 })
 
 apiRouter.post('/controlair-on', async function (req, res) {
-  // 공기청정기 켜줘 관련 텍스트가 들어오면 실행
-  const { userRequest } = req.body
-  const utterance = userRequest.utterance
-
   try {
+    const { userRequest } = req.body
+
+    if (!userRequest || !userRequest.utterance) {
+      // userRequest나 utterance가 없는 경우 에러 처리
+      throw new Error('userRequest나 utterance가 없습니다.')
+    }
+
+    const utterance = userRequest.utterance
+
+    // 이하 코드는 유효한 utterance가 있는 경우에만 실행됩니다.
+
     const url = `https://api.smartthings.com/v1/devices/${AIR_DEVICE_NUM}/commands`
     const jsonData = {
       commands: [

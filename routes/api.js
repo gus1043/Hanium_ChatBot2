@@ -31,7 +31,7 @@ apiRouter.post('/controlbulb-on', async function (req, res) {
     const options = {
       method: 'POST',
       headers: {
-        Authorization: SMARTTHINGS_KEY,
+        Authorization: `Bearer ${SMARTTHINGS_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(jsonData),
@@ -82,7 +82,7 @@ apiRouter.post('/controlbulb-off', async function (req, res) {
     const options = {
       method: 'POST',
       headers: {
-        Authorization: SMARTTHINGS_KEY,
+        Authorization: `Bearer ${SMARTTHINGS_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(jsonData),
@@ -132,7 +132,7 @@ apiRouter.post('/controlbulb-color', async function (req, res) {
     const options = {
       method: 'POST',
       headers: {
-        Authorization: SMARTTHINGS_KEY,
+        Authorization: `Bearer ${SMARTTHINGS_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(jsonData),
@@ -183,7 +183,7 @@ apiRouter.post('/controlair-on', async function (req, res) {
     const options = {
       method: 'POST',
       headers: {
-        Authorization: SMARTTHINGS_KEY,
+        Authorization: `Bearer ${SMARTTHINGS_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(jsonData),
@@ -236,7 +236,7 @@ apiRouter.post('/controlair-off', async function (req, res) {
     const options = {
       method: 'POST',
       headers: {
-        Authorization: SMARTTHINGS_KEY,
+        Authorization: `Bearer ${SMARTTHINGS_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(jsonData),

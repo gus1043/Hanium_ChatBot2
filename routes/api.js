@@ -1,5 +1,4 @@
 require('dotenv').config() // Load environment variables from .env file
-
 var db = require('../lib/db.js');
 
 const AIR_DEVICE_NUM = process.env.AIR_DEVICE_NUM

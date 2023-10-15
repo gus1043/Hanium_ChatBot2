@@ -12,7 +12,7 @@ const axios = require('axios')
 const apiRouter = require('express').Router()
 
 apiRouter.post('/controlbulb-on', async function (req, res) {
-  // Àüµî, Àü±¸, ºÒºû ÄÑÁà µî ÅØ½ºÆ®°¡ µé¾î¿À¸é ½ÇÇà
+  // ì „ë“±, ì „êµ¬, ë¶ˆë¹› ì¼œì¤˜ ë“± í…ìŠ¤íŠ¸ê°€ ë“¤ì–´ì˜¤ë©´ ì‹¤í–‰
   db.query('insert into count2 (date, lightCnt, lightDate) values(CURRENT_DATE, lightCnt+1, now()) on duplicate key update lightCnt = lightCnt+1, lightDate = CURRENT_TIMESTAMP', function(err, results, fields){
     if(err) throw err;
     console.log(results);
@@ -53,7 +53,7 @@ apiRouter.post('/controlbulb-on', async function (req, res) {
         outputs: [
           {
             simpleText: {
-              text: 'ÀüµîÀÇ Àü¿øÀÌ ÄÑÁ³½À´Ï´Ù.',
+              text: 'ì „ë“±ì˜ ì „ì›ì´ ì¼œì¡ŒìŠµë‹ˆë‹¤.',
             },
           },
         ],
@@ -62,13 +62,13 @@ apiRouter.post('/controlbulb-on', async function (req, res) {
 
     res.status(200).send(responseBody)
   } catch (error) {
-    console.error('¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù.', error)
-    res.status(500).send('¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù.')
+    console.error('ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.', error)
+    res.status(500).send('ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.')
   }
 })
 
 apiRouter.post('/controlbulb-off', async function (req, res) {
-  // Àüµî, Àü±¸, ºÒºû ²¨Áà µî ÅØ½ºÆ®°¡ µé¾î¿À¸é ½ÇÇà
+  // ì „ë“±, ì „êµ¬, ë¶ˆë¹› êº¼ì¤˜ ë“± í…ìŠ¤íŠ¸ê°€ ë“¤ì–´ì˜¤ë©´ ì‹¤í–‰
   db.query('insert into count2 (date, lightCnt, lightDate) values(CURRENT_DATE, lightCnt+1, now()) on duplicate key update lightCnt = lightCnt+1, lightDate = CURRENT_TIMESTAMP', function(err, results, fields){
     if(err) throw err;
     console.log(results);
@@ -109,7 +109,7 @@ apiRouter.post('/controlbulb-off', async function (req, res) {
         outputs: [
           {
             simpleText: {
-              text: 'ÀüµîÀÇ Àü¿øÀÌ ÄÑÁ³½À´Ï´Ù.',
+              text: 'ì „ë“±ì˜ ì „ì›ì´ êº¼ì¡ŒìŠµë‹ˆë‹¤.',
             },
           },
         ],
@@ -118,13 +118,13 @@ apiRouter.post('/controlbulb-off', async function (req, res) {
 
     res.status(200).send(responseBody)
   } catch (error) {
-    console.error('¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù.', error)
-    res.status(500).send('¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù.')
+    console.error('ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.', error)
+    res.status(500).send('ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.')
   }
 })
 
 apiRouter.post('/controlbulb-color', async function (req, res) {
-  // Àüµî Á¦¾î + ±âºĞ °ü·Ã ÅØ½ºÆ® µé¾î¿À¸é ½ÇÇà
+  // ì „ë“± ì œì–´ + ê¸°ë¶„ ê´€ë ¨ í…ìŠ¤íŠ¸ ë“¤ì–´ì˜¤ë©´ ì‹¤í–‰
   db.query('insert into count2 (date, lightCnt, lightDate) values(CURRENT_DATE, lightCnt+1, now()) on duplicate key update lightCnt = lightCnt+1, lightDate = CURRENT_TIMESTAMP', function(err, results, fields){
     if(err) throw err;
     console.log(results);
@@ -141,7 +141,7 @@ apiRouter.post('/controlbulb-color', async function (req, res) {
           component: 'main',
           capability: 'colorControl',
           command: 'setHue',
-          arguments: [360], // »öÁ¶ °ª (0ºÎÅÍ 360±îÁö, 0ÀÌ »¡°£»ö)
+          arguments: [360], // ìƒ‰ì¡° ê°’ (0ë¶€í„° 360ê¹Œì§€, 0ì´ ë¹¨ê°„ìƒ‰)
         },
       ],
     }
@@ -164,7 +164,7 @@ apiRouter.post('/controlbulb-color', async function (req, res) {
         outputs: [
           {
             simpleText: {
-              text: 'ÀüµîÀÇ »öÀÌ ¹Ù²î¾ú½À´Ï´Ù.',
+              text: 'ì „ë“±ì˜ ìƒ‰ì´ ë°”ë€Œì—ˆìŠµë‹ˆë‹¤.',
             },
           },
         ],
@@ -173,8 +173,8 @@ apiRouter.post('/controlbulb-color', async function (req, res) {
 
     res.status(200).send(responseBody)
   } catch (error) {
-    console.error('¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù.', error)
-    res.status(500).send('¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù.')
+    console.error('ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.', error)
+    res.status(500).send('ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.')
   }
 })
 
@@ -189,13 +189,13 @@ apiRouter.post('/controlair-on', async function (req, res) {
     const { userRequest } = req.body
 
     if (!userRequest || !userRequest.utterance) {
-      // userRequest³ª utterance°¡ ¾ø´Â °æ¿ì ¿¡·¯ Ã³¸®
-      throw new Error('userRequest³ª utterance°¡ ¾ø½À´Ï´Ù.')
+      /// userRequestë‚˜ utteranceê°€ ì—†ëŠ” ê²½ìš° ì—ëŸ¬ ì²˜ë¦¬
+      throw new Error('userRequestë‚˜ utteranceê°€ ì—†ìŠµë‹ˆë‹¤.')
     }
 
     const utterance = userRequest.utterance
 
-    // ÀÌÇÏ ÄÚµå´Â À¯È¿ÇÑ utterance°¡ ÀÖ´Â °æ¿ì¿¡¸¸ ½ÇÇàµË´Ï´Ù.
+    // ì´í•˜ ì½”ë“œëŠ” ìœ íš¨í•œ utteranceê°€ ìˆëŠ” ê²½ìš°ì—ë§Œ ì‹¤í–‰ë©ë‹ˆë‹¤.
 
     const url = `https://api.smartthings.com/v1/devices/${AIR_DEVICE_NUM}/commands`
     const jsonData = {
@@ -228,7 +228,7 @@ apiRouter.post('/controlair-on', async function (req, res) {
         outputs: [
           {
             simpleText: {
-              text: '°ø±â Ã»Á¤±âÀÇ Àü¿øÀÌ ÄÑÁ³½À´Ï´Ù.',
+              text: 'ê³µê¸° ì²­ì •ê¸°ì˜ ì „ì›ì´ ì¼œì¡ŒìŠµë‹ˆë‹¤.',
             },
           },
         ],
@@ -237,13 +237,13 @@ apiRouter.post('/controlair-on', async function (req, res) {
 
     res.status(200).send(responseBody)
   } catch (error) {
-    console.error('¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù.', error)
-    res.status(500).send('¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù.')
+    console.error('ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.', error)
+    res.status(500).send('ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.')
   }
 })
 
 apiRouter.post('/controlair-off', async function (req, res) {
-  // °ø±âÃ»Á¤±â ²¨Áà °ü·Ã ÅØ½ºÆ®°¡ µé¾î¿À¸é ½ÇÇà
+  // ê³µê¸°ì²­ì •ê¸° êº¼ì¤˜ ê´€ë ¨ í…ìŠ¤íŠ¸ê°€ ë“¤ì–´ì˜¤ë©´ ì‹¤í–‰
   db.query('insert into count2 (date, airCnt, airDate) values(CURRENT_DATE, airCnt+1, now()) on duplicate key update airCnt = airCnt+1, airDate = CURRENT_TIMESTAMP', function(err, results, fields){
     if(err) throw err;
     console.log(results);
@@ -286,7 +286,7 @@ apiRouter.post('/controlair-off', async function (req, res) {
         outputs: [
           {
             simpleText: {
-              text: '°ø±â Ã»Á¤±âÀÇ Àü¿øÀÌ ²¨Á³½À´Ï´Ù.',
+              text: 'ê³µê¸° ì²­ì •ê¸°ì˜ ì „ì›ì´ êº¼ì¡ŒìŠµë‹ˆë‹¤.',
             },
           },
         ],
@@ -295,13 +295,13 @@ apiRouter.post('/controlair-off', async function (req, res) {
 
     res.status(200).send(responseBody)
   } catch (error) {
-    console.error('¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù.', error)
-    res.status(500).send('¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù.')
+    console.error('ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.', error)
+    res.status(500).send('ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.')
   }
 })
 
 apiRouter.post('/controlmonitor', function (req, res) {
-  // Ã¤³Î, ¼Ò¸®, TV, ¸ğ´ÏÅÍ µî ÅØ½ºÆ®°¡ µé¾î¿À¸é ½ÇÇà
+  // ì±„ë„, ì†Œë¦¬, TV, ëª¨ë‹ˆí„° ë“± í…ìŠ¤íŠ¸ê°€ ë“¤ì–´ì˜¤ë©´ ì‹¤í–‰
   db.query('insert into count2 (date, monitorCnt, monitorDate) values(CURRENT_DATE, monitorCnt+1, now()) on duplicate key update monitorCnt = monitorCnt+1, monitorDate = CURRENT_TIMESTAMP', function(err, results, fields){
     if(err) throw err;
     console.log(results);
@@ -326,16 +326,16 @@ apiRouter.post('/controlmonitor', function (req, res) {
   res.status(200).send(responseBody)
 })
 
-// '/chatgpt' ¿£µåÆ÷ÀÎÆ®¿¡ ´ëÇÑ POST ¿äÃ» ÇÚµé·¯
+// '/chatgpt' ì—”ë“œí¬ì¸íŠ¸ì— ëŒ€í•œ POST ìš”ì²­ í•¸ë“¤ëŸ¬
 apiRouter.post('/chatgpt', async function (req, res) {
   const { userRequest } = req.body
   const utterance = userRequest.utterance
 
   try {
-    // OpenAI API¿¡ ¸Ş½ÃÁö Àü´ŞÇÏ°í ÀÀ´ä ¹Ş±â
+    // OpenAI APIì— ë©”ì‹œì§€ ì „ë‹¬í•˜ê³  ì‘ë‹µ ë°›ê¸°
     const resGPT = await getResponse(utterance)
 
-    // ChatGPT ÀÀ´äÀ» Ä«Ä«¿ÀÅå ÇÃ·¯½ºÄ£±¸ API¿¡ ¸Â´Â Çü½ÄÀ¸·Î º¯È¯
+    // ChatGPT ì‘ë‹µì„ ì¹´ì¹´ì˜¤í†¡ í”ŒëŸ¬ìŠ¤ì¹œêµ¬ APIì— ë§ëŠ” í˜•ì‹ìœ¼ë¡œ ë³€í™˜
     const responseBody = {
       version: '2.0',
       template: {
@@ -349,10 +349,10 @@ apiRouter.post('/chatgpt', async function (req, res) {
       },
     }
 
-    // º¯È¯µÈ ÀÀ´ä º¸³»±â
+    // ë³€í™˜ëœ ì‘ë‹µ ë³´ë‚´ê¸°
     res.status(200).send(responseBody)
   } catch (error) {
-    // ¿À·ù Á¤º¸¸¦ ´õ ÀÚ¼¼ÇÏ°Ô Ãâ·ÂÇÏ±â
+    // ì˜¤ë¥˜ ì •ë³´ë¥¼ ë” ìì„¸í•˜ê²Œ ì¶œë ¥í•˜ê¸°
     console.error('Error calling OpenAI API:')
     console.error('Error message:', error.message)
     if (error.response) {
@@ -363,7 +363,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
   }
 })
 
-// OpenAI API·Î ¸Ş½ÃÁö¸¦ º¸³»°í ÀÀ´äÀ» ¹Ş´Â ÇÔ¼ö
+// OpenAI APIë¡œ ë©”ì‹œì§€ë¥¼ ë³´ë‚´ê³  ì‘ë‹µì„ ë°›ëŠ” í•¨ìˆ˜
 async function getResponse(msg) {
   const data = {
     model: 'gpt-3.5-turbo',
@@ -386,7 +386,7 @@ async function getResponse(msg) {
     const result1 = response.data.choices[0].message.content
     return result1
   } catch (e) {
-    console.error('OpenAI API ¿À·ù:', e.response?.data?.error || e.message || e)
+    console.error('OpenAI API ì˜¤ë¥˜:', e.response?.data?.error || e.message || e)
     throw e
   }
 }

@@ -12,6 +12,11 @@ const apiRouter = require('express').Router()
 
 apiRouter.post('/controlbulb-on', async function (req, res) {
   // 전등, 전구, 불빛 켜줘 등 텍스트가 들어오면 실행
+  db.query('update count set lightCnt = lightCnt + 1, lightDate = now() where cntIdx = 1', function(err, results, fields){
+    if(err) throw err;
+    console.log(results);
+  })
+
   const { userRequest } = req.body
   const utterance = userRequest.utterance
 
@@ -63,6 +68,11 @@ apiRouter.post('/controlbulb-on', async function (req, res) {
 
 apiRouter.post('/controlbulb-off', async function (req, res) {
   // 전등, 전구, 불빛 꺼줘 등 텍스트가 들어오면 실행
+  db.query('update count set lightCnt = lightCnt + 1, lightDate = now() where cntIdx = 1', function(err, results, fields){
+    if(err) throw err;
+    console.log(results);
+  })
+
   const { userRequest } = req.body
   const utterance = userRequest.utterance
 
@@ -114,6 +124,11 @@ apiRouter.post('/controlbulb-off', async function (req, res) {
 
 apiRouter.post('/controlbulb-color', async function (req, res) {
   // 전등 제어 + 기분 관련 텍스트 들어오면 실행
+  db.query('update count set lightCnt = lightCnt + 1, lightDate = now() where cntIdx = 1', function(err, results, fields){
+    if(err) throw err;
+    console.log(results);
+  })
+
   const { userRequest } = req.body
   const utterance = userRequest.utterance
 
@@ -164,7 +179,7 @@ apiRouter.post('/controlbulb-color', async function (req, res) {
 
 apiRouter.post('/controlair-on', async function (req, res) {
   
-  db.query('update count set airCnt = airCnt + 1 where cntIdx = 1', function(err, results, fields){
+  db.query('update count set airCnt = airCnt + 1, airDate = now() where cntIdx = 1', function(err, results, fields){
     if(err) throw err;
     console.log(results);
   })
@@ -228,6 +243,11 @@ apiRouter.post('/controlair-on', async function (req, res) {
 
 apiRouter.post('/controlair-off', async function (req, res) {
   // 공기청정기 꺼줘 관련 텍스트가 들어오면 실행
+  db.query('update count set airCnt = airCnt + 1, airDate = now() where cntIdx = 1', function(err, results, fields){
+    if(err) throw err;
+    console.log(results);
+  })
+
   const { userRequest } = req.body
   const utterance = userRequest.utterance
 
@@ -281,6 +301,11 @@ apiRouter.post('/controlair-off', async function (req, res) {
 
 apiRouter.post('/controlmonitor', function (req, res) {
   // 채널, 소리, TV, 모니터 등 텍스트가 들어오면 실행
+  db.query('update count set monitorCnt = monitorCnt + 1, monitorDate = now() where cntIdx = 1', function(err, results, fields){
+    if(err) throw err;
+    console.log(results);
+  })
+
   const { userRequest } = req.body
   const utterance = userRequest.utterance
 

@@ -1,6 +1,6 @@
 require('dotenv').config() // Load environment variables from .env file
 
-var db = require('../lib/db.js');
+var db = require('../lib/db.js')
 
 const AIR_DEVICE_NUM = process.env.AIR_DEVICE_NUM
 const BULB_DEVICE_NUM = process.env.BULB_DEVICE_NUM
@@ -13,10 +13,6 @@ const apiRouter = require('express').Router()
 
 apiRouter.post('/controlbulb-on', async function (req, res) {
   // 전등, 전구, 불빛 켜줘 등 텍스트가 들어오면 실행
-  db.query('insert into count2 (date, lightCnt, lightDate) values(CURRENT_DATE, lightCnt+1, now()) on duplicate key update lightCnt = lightCnt+1, lightDate = CURRENT_TIMESTAMP', function(err, results, fields){
-    if(err) throw err;
-    console.log(results);
-  })
 
   const { userRequest } = req.body
   const utterance = userRequest.utterance
@@ -69,10 +65,6 @@ apiRouter.post('/controlbulb-on', async function (req, res) {
 
 apiRouter.post('/controlbulb-off', async function (req, res) {
   // 전등, 전구, 불빛 꺼줘 등 텍스트가 들어오면 실행
-  db.query('insert into count2 (date, lightCnt, lightDate) values(CURRENT_DATE, lightCnt+1, now()) on duplicate key update lightCnt = lightCnt+1, lightDate = CURRENT_TIMESTAMP', function(err, results, fields){
-    if(err) throw err;
-    console.log(results);
-  })
 
   const { userRequest } = req.body
   const utterance = userRequest.utterance
@@ -125,10 +117,6 @@ apiRouter.post('/controlbulb-off', async function (req, res) {
 
 apiRouter.post('/controlbulb-color', async function (req, res) {
   // 전등 제어 + 기분 관련 텍스트 들어오면 실행
-  db.query('insert into count2 (date, lightCnt, lightDate) values(CURRENT_DATE, lightCnt+1, now()) on duplicate key update lightCnt = lightCnt+1, lightDate = CURRENT_TIMESTAMP', function(err, results, fields){
-    if(err) throw err;
-    console.log(results);
-  })
 
   const { userRequest } = req.body
   const utterance = userRequest.utterance
@@ -179,12 +167,14 @@ apiRouter.post('/controlbulb-color', async function (req, res) {
 })
 
 apiRouter.post('/controlair-on', async function (req, res) {
-  
-  db.query('insert into count2 (date, airCnt, airDate) values(CURRENT_DATE, airCnt+1, now()) on duplicate key update airCnt = airCnt+1, airDate = CURRENT_TIMESTAMP', function(err, results, fields){
-    if(err) throw err;
-    console.log(results);
-  })
-  
+  db.query(
+    'insert into count2 (date, airCnt, airDate) values(CURRENT_DATE, airCnt+1, now()) on duplicate key update airCnt = airCnt+1, airDate = CURRENT_TIMESTAMP',
+    function (err, results, fields) {
+      if (err) throw err
+      console.log(results)
+    },
+  )
+
   try {
     const { userRequest } = req.body
 
@@ -227,8 +217,11 @@ apiRouter.post('/controlair-on', async function (req, res) {
       template: {
         outputs: [
           {
-            simpleText: {
-              text: '공기 청정기의 전원이 켜졌습니다.',
+            basicCard: {
+              title: '거실에 있는 공기청정기의 전원이 켜졌어요.',
+              thumbnail: {
+                imageUrl: 'https://i.ibb.co/PW82Bdh/air-on.jpg',
+              },
             },
           },
         ],
@@ -244,10 +237,13 @@ apiRouter.post('/controlair-on', async function (req, res) {
 
 apiRouter.post('/controlair-off', async function (req, res) {
   // 공기청정기 꺼줘 관련 텍스트가 들어오면 실행
-  db.query('insert into count2 (date, airCnt, airDate) values(CURRENT_DATE, airCnt+1, now()) on duplicate key update airCnt = airCnt+1, airDate = CURRENT_TIMESTAMP', function(err, results, fields){
-    if(err) throw err;
-    console.log(results);
-  })
+  db.query(
+    'insert into count2 (date, airCnt, airDate) values(CURRENT_DATE, airCnt+1, now()) on duplicate key update airCnt = airCnt+1, airDate = CURRENT_TIMESTAMP',
+    function (err, results, fields) {
+      if (err) throw err
+      console.log(results)
+    },
+  )
 
   const { userRequest } = req.body
   const utterance = userRequest.utterance
@@ -285,8 +281,242 @@ apiRouter.post('/controlair-off', async function (req, res) {
       template: {
         outputs: [
           {
-            simpleText: {
-              text: '공기 청정기의 전원이 꺼졌습니다.',
+            basicCard: {
+              title: '거실에 있는 공기청정기의 전원이 꺼졌어요.',
+              thumbnail: {
+                imageUrl: 'https://i.ibb.co/qknd4r0/air-off.jpg',
+              },
+            },
+          },
+        ],
+      },
+    }
+
+    res.status(200).send(responseBody)
+  } catch (error) {
+    console.error('오류가 발생했습니다.', error)
+    res.status(500).send('오류가 발생했습니다.')
+  }
+})
+
+apiRouter.post('/controlair-low', async function (req, res) {
+  // 공기청정기 세기 약하게, 미풍 관련 텍스트가 들어오면 실행
+
+  const { userRequest } = req.body
+  const utterance = userRequest.utterance
+
+  console.log(AIR_DEVICE_NUM)
+
+  try {
+    const url = `https://api.smartthings.com/v1/devices/${AIR_DEVICE_NUM}/commands`
+    const jsonData = {
+      commands: [
+        {
+          component: 'main',
+          capability: 'airConditionerFanMode',
+          command: 'setFanMode',
+          arguments: ['low'],
+        },
+      ],
+    }
+
+    const options = {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${SMARTTHINGS_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(jsonData),
+    }
+
+    const response = await fetch(url, options)
+    const data = await response.json()
+
+    const responseBody = {
+      version: '2.0',
+      template: {
+        outputs: [
+          {
+            basicCard: {
+              title: '거실에 있는 공기청정기의 세기가 미풍으로 변경되었어요.',
+              description: '약한 바람으로 조용하게 공기를 정화할게요.',
+              thumbnail: {
+                imageUrl: 'https://i.ibb.co/pzrPCzD/air-low.jpg',
+              },
+            },
+          },
+        ],
+      },
+    }
+
+    res.status(200).send(responseBody)
+  } catch (error) {
+    console.error('오류가 발생했습니다.', error)
+    res.status(500).send('오류가 발생했습니다.')
+  }
+})
+
+apiRouter.post('/controlair-mid', async function (req, res) {
+  // 공기청정기 세기 중간, 약풍 관련 텍스트가 들어오면 실행
+
+  const { userRequest } = req.body
+  const utterance = userRequest.utterance
+
+  console.log(AIR_DEVICE_NUM)
+
+  try {
+    const url = `https://api.smartthings.com/v1/devices/${AIR_DEVICE_NUM}/commands`
+    const jsonData = {
+      commands: [
+        {
+          component: 'main',
+          capability: 'airConditionerFanMode',
+          command: 'setFanMode',
+          arguments: ['medium'],
+        },
+      ],
+    }
+
+    const options = {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${SMARTTHINGS_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(jsonData),
+    }
+
+    const response = await fetch(url, options)
+    const data = await response.json()
+
+    const responseBody = {
+      version: '2.0',
+      template: {
+        outputs: [
+          {
+            basicCard: {
+              title:
+                '거실에 있는 공기청정기의 전원의 세기가 약풍으로 바뀌었어요.',
+              description: '중간 바람을 활용해 효율적으로 공기를 정화할게요.',
+              thumbnail: {
+                imageUrl: 'https://i.ibb.co/PN8NWHx/air-mid.jpg',
+              },
+            },
+          },
+        ],
+      },
+    }
+
+    res.status(200).send(responseBody)
+  } catch (error) {
+    console.error('오류가 발생했습니다.', error)
+    res.status(500).send('오류가 발생했습니다.')
+  }
+})
+
+apiRouter.post('/controlair-high', async function (req, res) {
+  // 공기청정기 세기 강풍, 세게 관련 텍스트가 들어오면 실행
+
+  const { userRequest } = req.body
+  const utterance = userRequest.utterance
+
+  console.log(AIR_DEVICE_NUM)
+
+  try {
+    const url = `https://api.smartthings.com/v1/devices/${AIR_DEVICE_NUM}/commands`
+    const jsonData = {
+      commands: [
+        {
+          component: 'main',
+          capability: 'airConditionerFanMode',
+          command: 'setFanMode',
+          arguments: ['high'],
+        },
+      ],
+    }
+
+    const options = {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${SMARTTHINGS_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(jsonData),
+    }
+
+    const response = await fetch(url, options)
+    const data = await response.json()
+
+    const responseBody = {
+      version: '2.0',
+      template: {
+        outputs: [
+          {
+            basicCard: {
+              title:
+                '거실에 있는 공기청정기의 전원의 세기가 강풍으로 바뀌었어요.',
+              description: '입체 바람으로 강력하게 공기를 정화할게요.',
+              thumbnail: {
+                imageUrl: 'https://i.ibb.co/xg1yZwh/air-high.jpg',
+              },
+            },
+          },
+        ],
+      },
+    }
+
+    res.status(200).send(responseBody)
+  } catch (error) {
+    console.error('오류가 발생했습니다.', error)
+    res.status(500).send('오류가 발생했습니다.')
+  }
+})
+
+apiRouter.post('/controlair-sleep', async function (req, res) {
+  // 공기청정기 세기 수면풍, 취침 모드 관련 텍스트가 들어오면 실행
+
+  const { userRequest } = req.body
+  const utterance = userRequest.utterance
+
+  console.log(AIR_DEVICE_NUM)
+
+  try {
+    const url = `https://api.smartthings.com/v1/devices/${AIR_DEVICE_NUM}/commands`
+    const jsonData = {
+      commands: [
+        {
+          component: 'main',
+          capability: 'airConditionerFanMode',
+          command: 'setFanMode',
+          arguments: ['sleep'],
+        },
+      ],
+    }
+
+    const options = {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${SMARTTHINGS_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(jsonData),
+    }
+
+    const response = await fetch(url, options)
+    const data = await response.json()
+
+    const responseBody = {
+      version: '2.0',
+      template: {
+        outputs: [
+          {
+            basicCard: {
+              title:
+                '거실에 있는 공기청정기의 전원의 세기가 수면풍으로 바뀌었어요.',
+              description: '조용하고 편안하게 공기를 정화할게요.',
+              thumbnail: {
+                imageUrl: 'https://i.ibb.co/wSPBdYJ/air-sleep.jpg',
+              },
             },
           },
         ],
@@ -302,10 +532,6 @@ apiRouter.post('/controlair-off', async function (req, res) {
 
 apiRouter.post('/controlmonitor', function (req, res) {
   // 채널, 소리, TV, 모니터 등 텍스트가 들어오면 실행
-  db.query('insert into count2 (date, monitorCnt, monitorDate) values(CURRENT_DATE, monitorCnt+1, now()) on duplicate key update monitorCnt = monitorCnt+1, monitorDate = CURRENT_TIMESTAMP', function(err, results, fields){
-    if(err) throw err;
-    console.log(results);
-  })
 
   const { userRequest } = req.body
   const utterance = userRequest.utterance

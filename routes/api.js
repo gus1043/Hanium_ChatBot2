@@ -302,6 +302,14 @@ apiRouter.post('/controlair-off', async function (req, res) {
 apiRouter.post('/controlair-low', async function (req, res) {
   // 공기청정기 세기 약하게, 미풍 관련 텍스트가 들어오면 실행
 
+  db.query(
+    'insert into count2 (date, airCnt, airDate) values(CURRENT_DATE, airCnt+1, now()) on duplicate key update airCnt = airCnt+1, airDate = CURRENT_TIMESTAMP',
+    function (err, results, fields) {
+      if (err) throw err
+      console.log(results)
+    },
+  )
+
   const { userRequest } = req.body
   const utterance = userRequest.utterance
 
@@ -358,6 +366,14 @@ apiRouter.post('/controlair-low', async function (req, res) {
 
 apiRouter.post('/controlair-mid', async function (req, res) {
   // 공기청정기 세기 중간, 약풍 관련 텍스트가 들어오면 실행
+
+  db.query(
+    'insert into count2 (date, airCnt, airDate) values(CURRENT_DATE, airCnt+1, now()) on duplicate key update airCnt = airCnt+1, airDate = CURRENT_TIMESTAMP',
+    function (err, results, fields) {
+      if (err) throw err
+      console.log(results)
+    },
+  )
 
   const { userRequest } = req.body
   const utterance = userRequest.utterance
@@ -417,6 +433,14 @@ apiRouter.post('/controlair-mid', async function (req, res) {
 apiRouter.post('/controlair-high', async function (req, res) {
   // 공기청정기 세기 강풍, 세게 관련 텍스트가 들어오면 실행
 
+  db.query(
+    'insert into count2 (date, airCnt, airDate) values(CURRENT_DATE, airCnt+1, now()) on duplicate key update airCnt = airCnt+1, airDate = CURRENT_TIMESTAMP',
+    function (err, results, fields) {
+      if (err) throw err
+      console.log(results)
+    },
+  )
+
   const { userRequest } = req.body
   const utterance = userRequest.utterance
 
@@ -474,6 +498,14 @@ apiRouter.post('/controlair-high', async function (req, res) {
 
 apiRouter.post('/controlair-sleep', async function (req, res) {
   // 공기청정기 세기 수면풍, 취침 모드 관련 텍스트가 들어오면 실행
+
+  db.query(
+    'insert into count2 (date, airCnt, airDate) values(CURRENT_DATE, airCnt+1, now()) on duplicate key update airCnt = airCnt+1, airDate = CURRENT_TIMESTAMP',
+    function (err, results, fields) {
+      if (err) throw err
+      console.log(results)
+    },
+  )
 
   const { userRequest } = req.body
   const utterance = userRequest.utterance

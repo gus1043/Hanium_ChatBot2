@@ -6,6 +6,10 @@ const AIR_DEVICE_NUM = process.env.AIR_DEVICE_NUM
 const BULB_DEVICE_NUM = process.env.BULB_DEVICE_NUM
 const SMARTTHINGS_KEY = process.env.SMARTTHINGS_KEY
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY
+const NLP_KEY = process.env.NLP_KEY
+
+const language = require('@google-cloud/language').v2
+const client = new language.LanguageServiceClient()
 
 const axios = require('axios')
 
@@ -13,6 +17,14 @@ const apiRouter = require('express').Router()
 
 apiRouter.post('/controlbulb-on', async function (req, res) {
   // 전등, 전구, 불빛 켜줘 등 텍스트가 들어오면 실행
+
+  db.query(
+    'insert into count2 (date, lightCnt, lightDate) values(CURRENT_DATE, lightCnt+1, now()) on duplicate key update lightCnt = lightCnt+1, lightDate = CURRENT_TIMESTAMP',
+    function (err, results, fields) {
+      if (err) throw err
+      console.log(results)
+    },
+  )
 
   const { userRequest } = req.body
   const utterance = userRequest.utterance
@@ -66,8 +78,16 @@ apiRouter.post('/controlbulb-on', async function (req, res) {
 apiRouter.post('/controlbulb-off', async function (req, res) {
   // 전등, 전구, 불빛 꺼줘 등 텍스트가 들어오면 실행
 
-  const { userRequest } = req.body
-  const utterance = userRequest.utterance
+  db.query(
+    'insert into count2 (date, lightCnt, lightDate) values(CURRENT_DATE, lightCnt+1, now()) on duplicate key update lightCnt = lightCnt+1, lightDate = CURRENT_TIMESTAMP',
+    function (err, results, fields) {
+      if (err) throw err
+      console.log(results)
+    },
+  )
+
+  // const { userRequest } = req.body
+  // const utterance = userRequest.utterance
 
   try {
     const url = `https://api.smartthings.com/v1/devices/${BULB_DEVICE_NUM}/commands`
@@ -118,18 +138,44 @@ apiRouter.post('/controlbulb-off', async function (req, res) {
 apiRouter.post('/controlbulb-color', async function (req, res) {
   // 전등 제어 + 기분 관련 텍스트 들어오면 실행
 
+  db.query(
+    'insert into count2 (date, lightCnt, lightDate) values(CURRENT_DATE, lightCnt+1, now()) on duplicate key update lightCnt = lightCnt+1, lightDate = CURRENT_TIMESTAMP',
+    function (err, results, fields) {
+      if (err) throw err
+      console.log(results)
+    },
+  )
+
   const { userRequest } = req.body
   const utterance = userRequest.utterance
 
   try {
+    const resNLP = await getNLP(utterance)
+
     const url = `https://api.smartthings.com/v1/devices/${BULB_DEVICE_NUM}/commands`
+
+    if (resNLP <= -0.2) {
+      // When result1 is less than or equal to -0.2
+      hue = 115
+    } else if (resNLP >= -0.1 && resNLP <= 0.1) {
+      // When result1 is between -0.1 and 0.1
+      hue = 150
+    } else {
+      hue = 80
+    }
+
     const jsonData = {
       commands: [
         {
           component: 'main',
           capability: 'colorControl',
-          command: 'setHue',
-          arguments: [360], // 색조 값 (0부터 360까지, 0이 빨간색)
+          command: 'setColor',
+          arguments: [
+            {
+              hue: hue, // Default
+              saturation: 50,
+            },
+          ],
         },
       ],
     }
@@ -152,7 +198,7 @@ apiRouter.post('/controlbulb-color', async function (req, res) {
         outputs: [
           {
             simpleText: {
-              text: '전등의 색이 바뀌었습니다.',
+              text: resNLP,
             },
           },
         ],
@@ -165,6 +211,41 @@ apiRouter.post('/controlbulb-color', async function (req, res) {
     res.status(500).send('오류가 발생했습니다.')
   }
 })
+
+// OpenAI API로 메시지를 보내고 응답을 받는 함수
+async function getNLP(msg) {
+  const data = {
+    document: {
+      type: 'PLAIN_TEXT',
+      content: msg,
+    },
+  }
+
+  try {
+    const response = await axios.post(
+      `https://language.googleapis.com/v1/documents:analyzeSentiment?key=${NLP_KEY}`,
+      data,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        params: {
+          key: NLP_KEY,
+        },
+      },
+    )
+
+    const result1 =
+      response.data.sentences.reduce(
+        (sum, sentence) => sum + sentence.sentiment.score,
+        0,
+      ) / response.data.sentences.length
+    return result1
+  } catch (e) {
+    console.error('NLP API 오류:', e.response?.data?.error || e.message || e)
+    throw e
+  }
+}
 
 apiRouter.post('/controlair-on', async function (req, res) {
   db.query(
@@ -310,9 +391,6 @@ apiRouter.post('/controlair-low', async function (req, res) {
     },
   )
 
-  const { userRequest } = req.body
-  const utterance = userRequest.utterance
-
   console.log(AIR_DEVICE_NUM)
 
   try {
@@ -374,9 +452,6 @@ apiRouter.post('/controlair-mid', async function (req, res) {
       console.log(results)
     },
   )
-
-  const { userRequest } = req.body
-  const utterance = userRequest.utterance
 
   console.log(AIR_DEVICE_NUM)
 
@@ -441,9 +516,6 @@ apiRouter.post('/controlair-high', async function (req, res) {
     },
   )
 
-  const { userRequest } = req.body
-  const utterance = userRequest.utterance
-
   console.log(AIR_DEVICE_NUM)
 
   try {
@@ -506,9 +578,6 @@ apiRouter.post('/controlair-sleep', async function (req, res) {
       console.log(results)
     },
   )
-
-  const { userRequest } = req.body
-  const utterance = userRequest.utterance
 
   console.log(AIR_DEVICE_NUM)
 

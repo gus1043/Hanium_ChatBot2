@@ -154,10 +154,30 @@ apiRouter.post('/controlbulb-color', async function (req, res) {
 
     const url = `https://api.smartthings.com/v1/devices/${BULB_DEVICE_NUM}/commands`
 
-    if (resNLP <= -0.2) {
+    if (resNLP <= -0.3) {
       // When result1 is less than or equal to -0.2
       hue = 115
-    } else if (resNLP >= -0.1 && resNLP <= 0.1) {
+      BulbOutput = [
+        {
+          basicCard: {
+            title: '조명을 연한 노란색으로 설정했어요.',
+            description:
+              '힘들거나 기분이 좋지 않은 때는, 주로 따뜻하고 밝은 색상을 선택하는 것이 도움이 될 수 있습니다. 밝고 활기찬 노란색은 기분을 상쾌하게 하고, 당신에게 긍정적인 에너지를 불어넣어 줄 거예요. 아래는 기분이 우울할 때 도움을 줄 수 있는 정보를 담은 링크입니다.',
+            thumbnail: {
+              imageUrl:
+                'https://i.ibb.co/6mSJ4cY/creative-portrait-of-man-with-curtains-and-shadows-from-window.jpg',
+            },
+            buttons: [
+              {
+                action: 'webLink',
+                label: '우울할 때 도움되는 음식',
+                webLinkUrl: 'https://brunch.co.kr/@wikitree/159',
+              },
+            ],
+          },
+        },
+      ]
+    } else if (resNLP >= -0.2 && resNLP <= 0.3) {
       // When result1 is between -0.1 and 0.1
       hue = 150
     } else {
@@ -198,7 +218,7 @@ apiRouter.post('/controlbulb-color', async function (req, res) {
         outputs: [
           {
             simpleText: {
-              text: resNLP,
+              text: '작동 성공',
             },
           },
         ],
@@ -212,7 +232,7 @@ apiRouter.post('/controlbulb-color', async function (req, res) {
   }
 })
 
-// OpenAI API로 메시지를 보내고 응답을 받는 함수
+// 구글 감정 분석 API로 메시지를 보내고 응답을 받는 함수
 async function getNLP(msg) {
   const data = {
     document: {

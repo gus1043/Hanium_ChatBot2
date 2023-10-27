@@ -155,12 +155,12 @@ apiRouter.post('/controlbulb-color', async function (req, res) {
     const url = `https://api.smartthings.com/v1/devices/${BULB_DEVICE_NUM}/commands`
 
     let hue
-    let BulbOutput
+    let outputs
 
     if (resNLP <= -0.3) {
       // When result1 is less than or equal to -0.2
       hue = 115
-      BulbOutput = [
+      outputs = [
         {
           basicCard: {
             title: '조명을 연한 노란색으로 설정했어요.',
@@ -183,8 +183,34 @@ apiRouter.post('/controlbulb-color', async function (req, res) {
     } else if (resNLP >= -0.2 && resNLP <= 0.3) {
       // When result1 is between -0.1 and 0.1
       hue = 150
+      outputs = [
+        {
+          basicCard: {
+            title: '조명을 기본 흰색으로 설정했어요.',
+            description:
+              '말씀해 주셔서 감사합니다. 문장을 분석한 결과 기분이 보통이신 것 같은데, 제가 올바르게 분석했나요? 차분하고 깔끔한 느낌을 주는 흰색으로 조명을 바꿔 드릴게요.',
+            thumbnail: {
+              imageUrl:
+                'https://i.ibb.co/6mSJ4cY/creative-portrait-of-man-with-curtains-and-shadows-from-window.jpg',
+            },
+          },
+        },
+      ]
     } else {
       hue = 80
+      outputs = [
+        {
+          basicCard: {
+            title: '조명을 분홍색으로 설정했어요.',
+            description:
+              '오늘은 기분이 아주 좋아 보이네요! 행복과 포근함을 상징하는 분홍색으로 조명 색을 바꿔 드렸어요. 항상 좋은 하루 보내시길 바랍니다!',
+            thumbnail: {
+              imageUrl:
+                'https://i.ibb.co/6mSJ4cY/creative-portrait-of-man-with-curtains-and-shadows-from-window.jpg',
+            },
+          },
+        },
+      ]
     }
 
     const jsonData = {
@@ -218,13 +244,7 @@ apiRouter.post('/controlbulb-color', async function (req, res) {
     const responseBody = {
       version: '2.0',
       template: {
-        outputs: [
-          {
-            simpleText: {
-              text: BulbOutput,
-            },
-          },
-        ],
+        outputs,
       },
     }
 

@@ -150,7 +150,7 @@ apiRouter.post('/controlbulb-color', async function (req, res) {
   const utterance = userRequest.utterance
 
   try {
-    const resNLP = await getNLP(utterance)
+    const resNLP = await getNLP(userRequest)
 
     const url = `https://api.smartthings.com/v1/devices/${BULB_DEVICE_NUM}/commands`
 
@@ -188,10 +188,10 @@ apiRouter.post('/controlbulb-color', async function (req, res) {
           basicCard: {
             title: '조명을 기본 흰색으로 설정했어요.',
             description:
-              '말씀해 주셔서 감사합니다. 문장을 분석한 결과 기분이 보통이신 것 같은데, 제가 올바르게 분석했나요? 차분하고 깔끔한 느낌을 주는 흰색으로 조명을 바꿔 드릴게요.',
+              '말씀해 주셔서 감사합니다. 문장을 분석한 결과 기분이 보통이신 것 같습니다. 제가 올바르게 분석했나요? 차분하고 깔끔한 느낌을 주는 흰색으로 조명을 바꿔 드릴게요.',
             thumbnail: {
               imageUrl:
-                'https://i.ibb.co/6mSJ4cY/creative-portrait-of-man-with-curtains-and-shadows-from-window.jpg',
+                'https://i.ibb.co/MMFxqtZ/handsome-modern-guy-feeling-confident-showing-ok-sign-and-winking-at-you-assure-everything-okay-stan.jpg',
             },
           },
         },
@@ -206,7 +206,7 @@ apiRouter.post('/controlbulb-color', async function (req, res) {
               '오늘은 기분이 아주 좋아 보이네요! 행복과 포근함을 상징하는 분홍색으로 조명 색을 바꿔 드렸어요. 항상 좋은 하루 보내시길 바랍니다!',
             thumbnail: {
               imageUrl:
-                'https://i.ibb.co/6mSJ4cY/creative-portrait-of-man-with-curtains-and-shadows-from-window.jpg',
+                'https://i.ibb.co/fn6Zqxh/portrait-of-sincere-brunette-asian-female-model-rubs-palms-and-smiles-broadly-expresses-happiness-fe.jpg',
             },
           },
         },

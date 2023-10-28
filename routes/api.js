@@ -150,7 +150,7 @@ apiRouter.post('/controlbulb-color', async function (req, res) {
   const utterance = userRequest.utterance
 
   try {
-    const resNLP = await getNLP(userRequest)
+    const resNLP = await getNLP(utterance)
 
     const url = `https://api.smartthings.com/v1/devices/${BULB_DEVICE_NUM}/commands`
 
@@ -283,6 +283,7 @@ async function getNLP(msg) {
         (sum, sentence) => sum + sentence.sentiment.score,
         0,
       ) / response.data.sentences.length
+
     return result1
   } catch (e) {
     console.error('NLP API 오류:', e.response?.data?.error || e.message || e)

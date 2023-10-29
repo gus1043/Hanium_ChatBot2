@@ -135,161 +135,161 @@ apiRouter.post('/controlbulb-off', async function (req, res) {
   }
 })
 
-apiRouter.post('/controlbulb-color', async function (req, res) {
-  // 전등 제어 + 기분 관련 텍스트 들어오면 실행
+// apiRouter.post('/controlbulb-color', async function (req, res) {
+//   // 전등 제어 + 기분 관련 텍스트 들어오면 실행
 
-  db.query(
-    'insert into count2 (date, lightCnt, lightDate) values(CURRENT_DATE, lightCnt+1, now()) on duplicate key update lightCnt = lightCnt+1, lightDate = CURRENT_TIMESTAMP',
-    function (err, results, fields) {
-      if (err) throw err
-      console.log(results)
-    },
-  )
+//   db.query(
+//     'insert into count2 (date, lightCnt, lightDate) values(CURRENT_DATE, lightCnt+1, now()) on duplicate key update lightCnt = lightCnt+1, lightDate = CURRENT_TIMESTAMP',
+//     function (err, results, fields) {
+//       if (err) throw err
+//       console.log(results)
+//     },
+//   )
 
-  const { userRequest } = req.body
-  const utterance = userRequest.utterance
+//   const { userRequest } = req.body
+//   const utterance = userRequest.utterance
 
-  try {
-    const resNLP = await getNLP(utterance)
+//   try {
+//     const resNLP = await getNLP(utterance)
 
-    const url = `https://api.smartthings.com/v1/devices/${BULB_DEVICE_NUM}/commands`
+//     const url = `https://api.smartthings.com/v1/devices/${BULB_DEVICE_NUM}/commands`
 
-    let hue
-    let outputs
+//     let hue
+//     let outputs
 
-    if (resNLP <= -0.3) {
-      // When result1 is less than or equal to -0.2
-      hue = 115
-      outputs = [
-        {
-          basicCard: {
-            title: '조명을 연한 노란색으로 설정했어요.',
-            description:
-              '힘들거나 기분이 좋지 않은 때는, 주로 따뜻하고 밝은 색상을 선택하는 것이 도움이 될 수 있습니다. 밝고 활기찬 노란색은 기분을 상쾌하게 하고, 당신에게 긍정적인 에너지를 불어넣어 줄 거예요. 아래는 기분이 우울할 때 도움을 줄 수 있는 정보를 담은 링크입니다.',
-            thumbnail: {
-              imageUrl:
-                'https://i.ibb.co/6mSJ4cY/creative-portrait-of-man-with-curtains-and-shadows-from-window.jpg',
-            },
-            buttons: [
-              {
-                action: 'webLink',
-                label: '우울할 때 도움되는 음식',
-                webLinkUrl: 'https://brunch.co.kr/@wikitree/159',
-              },
-            ],
-          },
-        },
-      ]
-    } else if (resNLP >= -0.2 && resNLP <= 0.3) {
-      // When result1 is between -0.1 and 0.1
-      hue = 150
-      outputs = [
-        {
-          basicCard: {
-            title: '조명을 기본 흰색으로 설정했어요.',
-            description:
-              '말씀해 주셔서 감사합니다. 문장을 분석한 결과 기분이 보통이신 것 같습니다. 제가 올바르게 분석했나요? 차분하고 깔끔한 느낌을 주는 흰색으로 조명을 바꿔 드릴게요.',
-            thumbnail: {
-              imageUrl:
-                'https://i.ibb.co/MMFxqtZ/handsome-modern-guy-feeling-confident-showing-ok-sign-and-winking-at-you-assure-everything-okay-stan.jpg',
-            },
-          },
-        },
-      ]
-    } else {
-      hue = 80
-      outputs = [
-        {
-          basicCard: {
-            title: '조명을 분홍색으로 설정했어요.',
-            description:
-              '오늘은 기분이 아주 좋아 보이네요! 행복과 포근함을 상징하는 분홍색으로 조명 색을 바꿔 드렸어요. 항상 좋은 하루 보내시길 바랍니다!',
-            thumbnail: {
-              imageUrl:
-                'https://i.ibb.co/fn6Zqxh/portrait-of-sincere-brunette-asian-female-model-rubs-palms-and-smiles-broadly-expresses-happiness-fe.jpg',
-            },
-          },
-        },
-      ]
-    }
+//     if (resNLP <= -0.3) {
+//       // When result1 is less than or equal to -0.2
+//       hue = 115
+//       outputs = [
+//         {
+//           basicCard: {
+//             title: '조명을 연한 노란색으로 설정했어요.',
+//             description:
+//               '힘들거나 기분이 좋지 않은 때는, 주로 따뜻하고 밝은 색상을 선택하는 것이 도움이 될 수 있습니다. 밝고 활기찬 노란색은 기분을 상쾌하게 하고, 당신에게 긍정적인 에너지를 불어넣어 줄 거예요. 아래는 기분이 우울할 때 도움을 줄 수 있는 정보를 담은 링크입니다.',
+//             thumbnail: {
+//               imageUrl:
+//                 'https://i.ibb.co/6mSJ4cY/creative-portrait-of-man-with-curtains-and-shadows-from-window.jpg',
+//             },
+//             buttons: [
+//               {
+//                 action: 'webLink',
+//                 label: '우울할 때 도움되는 음식',
+//                 webLinkUrl: 'https://brunch.co.kr/@wikitree/159',
+//               },
+//             ],
+//           },
+//         },
+//       ]
+//     } else if (resNLP >= -0.2 && resNLP <= 0.3) {
+//       // When result1 is between -0.1 and 0.1
+//       hue = 150
+//       outputs = [
+//         {
+//           basicCard: {
+//             title: '조명을 기본 흰색으로 설정했어요.',
+//             description:
+//               '말씀해 주셔서 감사합니다. 문장을 분석한 결과 기분이 보통이신 것 같습니다. 제가 올바르게 분석했나요? 차분하고 깔끔한 느낌을 주는 흰색으로 조명을 바꿔 드릴게요.',
+//             thumbnail: {
+//               imageUrl:
+//                 'https://i.ibb.co/MMFxqtZ/handsome-modern-guy-feeling-confident-showing-ok-sign-and-winking-at-you-assure-everything-okay-stan.jpg',
+//             },
+//           },
+//         },
+//       ]
+//     } else {
+//       hue = 80
+//       outputs = [
+//         {
+//           basicCard: {
+//             title: '조명을 분홍색으로 설정했어요.',
+//             description:
+//               '오늘은 기분이 아주 좋아 보이네요! 행복과 포근함을 상징하는 분홍색으로 조명 색을 바꿔 드렸어요. 항상 좋은 하루 보내시길 바랍니다!',
+//             thumbnail: {
+//               imageUrl:
+//                 'https://i.ibb.co/fn6Zqxh/portrait-of-sincere-brunette-asian-female-model-rubs-palms-and-smiles-broadly-expresses-happiness-fe.jpg',
+//             },
+//           },
+//         },
+//       ]
+//     }
 
-    const jsonData = {
-      commands: [
-        {
-          component: 'main',
-          capability: 'colorControl',
-          command: 'setColor',
-          arguments: [
-            {
-              hue: hue, // Default
-              saturation: 50,
-            },
-          ],
-        },
-      ],
-    }
+//     const jsonData = {
+//       commands: [
+//         {
+//           component: 'main',
+//           capability: 'colorControl',
+//           command: 'setColor',
+//           arguments: [
+//             {
+//               hue: hue, // Default
+//               saturation: 50,
+//             },
+//           ],
+//         },
+//       ],
+//     }
 
-    const options = {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${SMARTTHINGS_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(jsonData),
-    }
+//     const options = {
+//       method: 'POST',
+//       headers: {
+//         Authorization: `Bearer ${SMARTTHINGS_KEY}`,
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify(jsonData),
+//     }
 
-    const response = await fetch(url, options)
-    const data = await response.json()
+//     const response = await fetch(url, options)
+//     const data = await response.json()
 
-    const responseBody = {
-      version: '2.0',
-      template: {
-        outputs,
-      },
-    }
+//     const responseBody = {
+//       version: '2.0',
+//       template: {
+//         outputs,
+//       },
+//     }
 
-    res.status(200).send(responseBody)
-  } catch (error) {
-    console.error('오류가 발생했습니다.', error)
-    res.status(500).send('오류가 발생했습니다.')
-  }
-})
+//     res.status(200).send(responseBody)
+//   } catch (error) {
+//     console.error('오류가 발생했습니다.', error)
+//     res.status(500).send('오류가 발생했습니다.')
+//   }
+// })
 
 // 구글 감정 분석 API로 메시지를 보내고 응답을 받는 함수
-async function getNLP(msg) {
-  const data = {
-    document: {
-      type: 'PLAIN_TEXT',
-      content: msg,
-    },
-  }
+// async function getNLP(msg) {
+//   const data = {
+//     document: {
+//       type: 'PLAIN_TEXT',
+//       content: msg,
+//     },
+//   }
 
-  try {
-    const response = await axios.post(
-      `https://language.googleapis.com/v1/documents:analyzeSentiment?key=${NLP_KEY}`,
-      data,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        params: {
-          key: NLP_KEY,
-        },
-      },
-    )
+//   try {
+//     const response = await axios.post(
+//       `https://language.googleapis.com/v1/documents:analyzeSentiment?key=${NLP_KEY}`,
+//       data,
+//       {
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         params: {
+//           key: NLP_KEY,
+//         },
+//       },
+//     )
 
-    const result1 =
-      response.data.sentences.reduce(
-        (sum, sentence) => sum + sentence.sentiment.score,
-        0,
-      ) / response.data.sentences.length
+//     const result1 =
+//       response.data.sentences.reduce(
+//         (sum, sentence) => sum + sentence.sentiment.score,
+//         0,
+//       ) / response.data.sentences.length
 
-    return result1
-  } catch (e) {
-    console.error('NLP API 오류:', e.response?.data?.error || e.message || e)
-    throw e
-  }
-}
+//     return result1
+//   } catch (e) {
+//     console.error('NLP API 오류:', e.response?.data?.error || e.message || e)
+//     throw e
+//   }
+// }
 
 apiRouter.post('/controlair-on', async function (req, res) {
   db.query(
@@ -702,35 +702,204 @@ apiRouter.post('/chatgpt', async function (req, res) {
   const { userRequest } = req.body
   const utterance = userRequest.utterance
 
-  try {
-    // OpenAI API에 메시지 전달하고 응답 받기
-    const resGPT = await getResponse(utterance)
+  function containsKeywords(utterance) {
+    const keywords = [
+      '조명',
+      '조명 색',
+      '전등',
+      '전등 색',
+      '불빛',
+      '불빛 색',
+      '분위기',
+      '전등 색 바꿔',
+      '전구 색 바꿔',
+      '조명 바꿔 줘',
+      '분위기 바꿔',
+    ]
 
-    // ChatGPT 응답을 카카오톡 플러스친구 API에 맞는 형식으로 변환
+    return keywords.some((keyword) => utterance.includes(keyword))
+  }
+
+  if (containsKeywords(utterance)) {
+    // 전등 제어 + 기분 관련 텍스트 들어오면 실행
+
+    db.query(
+      'insert into count2 (date, lightCnt, lightDate) values(CURRENT_DATE, lightCnt+1, now()) on duplicate key update lightCnt = lightCnt+1, lightDate = CURRENT_TIMESTAMP',
+      function (err, results, fields) {
+        if (err) throw err
+        console.log(results)
+      },
+    )
+
+    const resNLP = await getNLP(utterance)
+
+    const url = `https://api.smartthings.com/v1/devices/${BULB_DEVICE_NUM}/commands`
+
+    let hue
+    let outputs
+
+    if (resNLP <= -0.3) {
+      // When result1 is less than or equal to -0.2
+      hue = 115
+      outputs = [
+        {
+          basicCard: {
+            title: '조명을 연한 노란색으로 설정했어요.',
+            description:
+              '힘들거나 기분이 좋지 않은 때는, 주로 따뜻하고 밝은 색상을 선택하는 것이 도움이 될 수 있습니다. 밝고 활기찬 노란색은 기분을 상쾌하게 하고, 당신에게 긍정적인 에너지를 불어넣어 줄 거예요. 아래는 기분이 우울할 때 도움을 줄 수 있는 정보를 담은 링크입니다.',
+            thumbnail: {
+              imageUrl:
+                'https://i.ibb.co/6mSJ4cY/creative-portrait-of-man-with-curtains-and-shadows-from-window.jpg',
+            },
+            buttons: [
+              {
+                action: 'webLink',
+                label: '우울할 때 도움되는 음식',
+                webLinkUrl: 'https://brunch.co.kr/@wikitree/159',
+              },
+            ],
+          },
+        },
+      ]
+    } else if (resNLP >= -0.2 && resNLP <= 0.3) {
+      // When result1 is between -0.1 and 0.1
+      hue = 150
+      outputs = [
+        {
+          basicCard: {
+            title: '조명을 기본 흰색으로 설정했어요.',
+            description:
+              '말씀해 주셔서 감사합니다. 문장을 분석한 결과 기분이 보통이신 것 같습니다. 제가 올바르게 분석했나요? 차분하고 깔끔한 느낌을 주는 흰색으로 조명을 바꿔 드릴게요.',
+            thumbnail: {
+              imageUrl:
+                'https://i.ibb.co/MMFxqtZ/handsome-modern-guy-feeling-confident-showing-ok-sign-and-winking-at-you-assure-everything-okay-stan.jpg',
+            },
+          },
+        },
+      ]
+    } else {
+      hue = 80
+      outputs = [
+        {
+          basicCard: {
+            title: '조명을 분홍색으로 설정했어요.',
+            description:
+              '오늘은 기분이 아주 좋아 보이네요! 행복과 포근함을 상징하는 분홍색으로 조명 색을 바꿔 드렸어요. 항상 좋은 하루 보내시길 바랍니다!',
+            thumbnail: {
+              imageUrl:
+                'https://i.ibb.co/fn6Zqxh/portrait-of-sincere-brunette-asian-female-model-rubs-palms-and-smiles-broadly-expresses-happiness-fe.jpg',
+            },
+          },
+        },
+      ]
+    }
+
+    const jsonData = {
+      commands: [
+        {
+          component: 'main',
+          capability: 'colorControl',
+          command: 'setColor',
+          arguments: [
+            {
+              hue: hue, // Default
+              saturation: 50,
+            },
+          ],
+        },
+      ],
+    }
+
+    const options = {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${SMARTTHINGS_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(jsonData),
+    }
+
+    const response = await fetch(url, options)
+    const data = await response.json()
+
     const responseBody = {
       version: '2.0',
       template: {
-        outputs: [
-          {
-            simpleText: {
-              text: resGPT,
-            },
-          },
-        ],
+        outputs,
       },
     }
 
-    // 변환된 응답 보내기
     res.status(200).send(responseBody)
-  } catch (error) {
-    // 오류 정보를 더 자세하게 출력하기
-    console.error('Error calling OpenAI API:')
-    console.error('Error message:', error.message)
-    if (error.response) {
-      console.error('Response status:', error.response.status)
-      console.error('Response data:', error.response.data)
+
+    // 구글 감정 분석 API로 메시지를 보내고 응답을 받는 함수
+    async function getNLP(msg) {
+      const data = {
+        document: {
+          type: 'PLAIN_TEXT',
+          content: msg,
+        },
+      }
+
+      try {
+        const response = await axios.post(
+          `https://language.googleapis.com/v1/documents:analyzeSentiment?key=${NLP_KEY}`,
+          data,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            params: {
+              key: NLP_KEY,
+            },
+          },
+        )
+
+        const result1 =
+          response.data.sentences.reduce(
+            (sum, sentence) => sum + sentence.sentiment.score,
+            0,
+          ) / response.data.sentences.length
+
+        return result1
+      } catch (e) {
+        console.error(
+          'NLP API 오류:',
+          e.response?.data?.error || e.message || e,
+        )
+        throw e
+      }
     }
-    res.status(500).send('Error generating response')
+  } else {
+    try {
+      // OpenAI API에 메시지 전달하고 응답 받기
+      const resGPT = await getResponse(utterance)
+
+      // ChatGPT 응답을 카카오톡 플러스친구 API에 맞는 형식으로 변환
+      const responseBody = {
+        version: '2.0',
+        template: {
+          outputs: [
+            {
+              simpleText: {
+                text: resGPT,
+              },
+            },
+          ],
+        },
+      }
+
+      // 변환된 응답 보내기
+      res.status(200).send(responseBody)
+    } catch (error) {
+      // 오류 정보를 더 자세하게 출력하기
+      console.error('Error calling OpenAI API:')
+      console.error('Error message:', error.message)
+      if (error.response) {
+        console.error('Response status:', error.response.status)
+        console.error('Response data:', error.response.data)
+      }
+      res.status(500).send('Error generating response')
+    }
   }
 })
 

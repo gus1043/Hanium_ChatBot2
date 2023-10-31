@@ -722,13 +722,13 @@ apiRouter.post('/chatgpt', async function (req, res) {
   if (containsKeywords(utterance)) {
     // 전등 제어 + 기분 관련 텍스트 들어오면 실행
 
-    // db.query(
-    //   'insert into count2 (date, lightCnt, lightDate) values(CURRENT_DATE, lightCnt+1, now()) on duplicate key update lightCnt = lightCnt+1, lightDate = CURRENT_TIMESTAMP',
-    //   function (err, results, fields) {
-    //     if (err) throw err
-    //     console.log(results)
-    //   },
-    // )
+    db.query(
+      'insert into count2 (date, lightCnt, lightDate) values(CURRENT_DATE, lightCnt+1, now()) on duplicate key update lightCnt = lightCnt+1, lightDate = CURRENT_TIMESTAMP',
+      function (err, results, fields) {
+        if (err) throw err
+        console.log(results)
+      },
+    )
 
     const resText = await translateText(utterance)
     console.log('resText:', resText)

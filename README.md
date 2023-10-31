@@ -1,14 +1,14 @@
 # Hanium_ChatBot2
 
-# google-translate API
+## google-translate API
 <p>
   https://cloud.google.com/translate/docs/reference/rest/v3/projects.locations/translateText
 </p>
 
-# Test 결과 
+## Test 결과 
 <img width="490" alt="image" src="https://github.com/gus1043/Hanium_ChatBot2/assets/80878955/37e07828-9bc2-4f23-a164-b85ba13f9f2a">
 
-# 실제 구현
+## 실제 구현
 POST https://www.googleapis.com/language/translate/v2?
 
 **설정방법**

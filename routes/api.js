@@ -834,12 +834,10 @@ apiRouter.post("/chatgpt", async function (req, res) {
     //구글 translate API
     async function translateText(msg) {
       const data = {
-        document: {
-          q: msg,
-          source: ko,
-          target: en,
-          foramt: text,
-        },
+        q: msg,
+        source: ko,
+        target: en,
+        foramt: text,
       };
 
       try {
@@ -855,9 +853,17 @@ apiRouter.post("/chatgpt", async function (req, res) {
             },
           }
         );
-
-        const transmsg = response.data.translations[0].translatedText;
-        getNLP(transmsg);
+        if (
+          response.data &&
+          response.data.translations &&
+          response.data.translations.length > 0
+        ) {
+          const transmsg = response.data.translations[0].translatedText;
+          console.log(transmsg);
+          getNLP(transmsg);
+        } else {
+          console.log("응답 데이터가 유효하지 않습니다.");
+        }
       } catch (e) {
         console.error(
           "Google translate API 오류:",

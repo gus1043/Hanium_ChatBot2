@@ -6,7 +6,8 @@
 </p>
 
 ## Test 결과 
-<img width="490" alt="image" src="https://github.com/gus1043/Hanium_ChatBot2/assets/80878955/37e07828-9bc2-4f23-a164-b85ba13f9f2a">
+![image](https://github.com/gus1043/Hanium_ChatBot2/assets/80878955/a72c4fad-e64d-425d-9533-d79a7b925cc5)
+
 
 ## 실제 구현
 POST https://www.googleapis.com/language/translate/v2?

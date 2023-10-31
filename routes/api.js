@@ -837,7 +837,7 @@ apiRouter.post("/chatgpt", async function (req, res) {
         q: msg,
         source: "ko",
         target: "en",
-        foramt: "text",
+        format: "text",
       };
 
       try {
@@ -853,18 +853,10 @@ apiRouter.post("/chatgpt", async function (req, res) {
             },
           }
         );
-        if (response.data && response.data.translations) {
-          const translationArray = response.data.translations;
-          if (translationArray.length > 0) {
-            const transmsg = translationArray[0].translatedText;
-            console.log(transmsg);
-            getNLP(transmsg);
-          } else {
-            console.log("translations 배열이 비어있습니다.");
-          }
-        } else {
-          console.log("응답 데이터가 유효하지 않습니다.");
-        }
+        const translatedText =
+          response.data.data.translations[0].translatedText;
+        console.log(translatedText);
+        getNLP(translatedText);
       } catch (e) {
         console.error(
           "Google translate API 오류:",
@@ -904,7 +896,7 @@ apiRouter.post("/chatgpt", async function (req, res) {
           },
           0
         );
-
+        console.log(result1);
         const result1 = weightedSum / response.data.sentences.length;
 
         return result1;

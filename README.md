@@ -31,11 +31,6 @@ POST https://www.googleapis.com/language/translate/v2?
 [Body]</br>
 |raw - Json|
 |:------:|
-|{
-"q" :"안녕녕",
-"source": "ko",
-"target" : "en",
-"format":"text"
-} |
+|{"q" :"안녕녕", "source": "ko", "target" : "en", "format":"text" } |
 
 

@@ -691,7 +691,7 @@ apiRouter.post('/controlmonitor-on', async function (req, res) {
   )
 
   try {
-    const url = `https://api.smartthings.com/v1/devices/${BULB_DEVICE_NUM}/commands`
+    const url = `https://api.smartthings.com/v1/devices/${MON_DEVICE_NUM}/commands`
     const jsonData = {
       commands: [
         {
@@ -752,7 +752,7 @@ apiRouter.post('/controlmonitor-off', async function (req, res) {
   )
 
   try {
-    const url = `https://api.smartthings.com/v1/devices/${BULB_DEVICE_NUM}/commands`
+    const url = `https://api.smartthings.com/v1/devices/${MON_DEVICE_NUM}/commands`
     const jsonData = {
       commands: [
         {

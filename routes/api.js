@@ -679,7 +679,7 @@ apiRouter.post('/controlair-sleep', async function (req, res) {
   }
 })
 
-apiRouter.post('/controlmonitor-on', function (req, res) {
+apiRouter.post('/controlmonitor-on', async function (req, res) {
   // 채널, 소리, TV, 모니터 등 텍스트가 들어오면 실행
 
   db.query(
@@ -713,6 +713,9 @@ apiRouter.post('/controlmonitor-on', function (req, res) {
       body: JSON.stringify(jsonData),
     }
 
+    const response = await fetch(url, options)
+    const data = await response.json()
+
     const responseBody = {
       version: '2.0',
       template: {
@@ -737,7 +740,7 @@ apiRouter.post('/controlmonitor-on', function (req, res) {
   }
 })
 
-apiRouter.post('/controlmonitor-off', function (req, res) {
+apiRouter.post('/controlmonitor-off', async function (req, res) {
   // 채널, 소리, TV, 모니터 등 텍스트가 들어오면 실행
 
   db.query(
@@ -770,6 +773,9 @@ apiRouter.post('/controlmonitor-off', function (req, res) {
       },
       body: JSON.stringify(jsonData),
     }
+
+    const response = await fetch(url, options)
+    const data = await response.json()
 
     const responseBody = {
       version: '2.0',

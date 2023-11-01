@@ -954,30 +954,33 @@ async function getResponse(msg) {
     ],
   }
 
-  const requestPromise = axios.post(
-    'https://api.openai.com/v1/chat/completions',
-    data,
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
-      },
-    },
-  )
-
   const timeoutPromise = new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve('타임아웃')
-    }, 5000) // 5초 타임아웃 설정
+      resolve('타임아웃입니다')
+    }, 4000) // 4초 타임아웃 설정
   })
 
   try {
-    const result = await Promise.race([requestPromise, timeoutPromise])
+    const responsePromise = axios.post(
+      'https://api.openai.com/v1/chat/completions',
+      data,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
+        },
+      },
+    )
 
-    if (result === '타임아웃') {
-      return '타임아웃'
+    const [response, timeout] = await Promise.race([
+      responsePromise,
+      timeoutPromise,
+    ])
+
+    if (timeout === '타임아웃입니다') {
+      return timeout
     } else {
-      const result1 = result.data.choices[0].message.content
+      const result1 = response.data.choices[0].message.content
       return result1
     }
   } catch (e) {

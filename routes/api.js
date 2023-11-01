@@ -954,21 +954,32 @@ async function getResponse(msg) {
     ],
   }
 
-  try {
-    const response = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
-      data,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
-        },
-        timeout: 200000,
+  const requestPromise = axios.post(
+    'https://api.openai.com/v1/chat/completions',
+    data,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
       },
-    )
+    },
+  )
 
-    const result1 = response.data.choices[0].message.content
-    return result1
+  const timeoutPromise = new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve('타임아웃')
+    }, 5000) // 5초 타임아웃 설정
+  })
+
+  try {
+    const result = await Promise.race([requestPromise, timeoutPromise])
+
+    if (result === '타임아웃') {
+      return '타임아웃'
+    } else {
+      const result1 = result.data.choices[0].message.content
+      return result1
+    }
   } catch (e) {
     console.error('OpenAI API 오류:', e.response?.data?.error || e.message || e)
     throw e

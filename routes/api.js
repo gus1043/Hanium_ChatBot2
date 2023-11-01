@@ -735,7 +735,6 @@ apiRouter.post('/controlmonitor-on', function (req, res) {
     console.error('오류가 발생했습니다.', error)
     res.status(500).send('오류가 발생했습니다.')
   }
-  res.status(200).send(responseBody)
 })
 
 apiRouter.post('/controlmonitor-off', function (req, res) {
@@ -794,7 +793,6 @@ apiRouter.post('/controlmonitor-off', function (req, res) {
     console.error('오류가 발생했습니다.', error)
     res.status(500).send('오류가 발생했습니다.')
   }
-  res.status(200).send(responseBody)
 })
 
 // '/chatgpt' 엔드포인트에 대한 POST 요청 핸들러

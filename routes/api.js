@@ -698,11 +698,8 @@ apiRouter.post('/controlmonitor', function (req, res) {
 
 // '/chatgpt' 엔드포인트에 대한 POST 요청 핸들러
 apiRouter.post('/chatgpt', async function (req, res) {
-  // const { userRequest } = req.body
-  // const utterance = userRequest.utterance
-
-  const utterance =
-    '머리로는 못해 이해를 정신 건강에 도움이 그녀를 마시고 취할 거야 24345+345234*35451*252*234의 값은?'
+  const { userRequest } = req.body
+  const utterance = userRequest.utterance
 
   function containsKeywords(utterance) {
     const keywords = [

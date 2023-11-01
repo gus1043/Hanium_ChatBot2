@@ -948,7 +948,10 @@ apiRouter.post('/chatgpt', async function (req, res) {
 async function getResponse(msg) {
   const data = {
     model: 'gpt-3.5-turbo',
-    messages: [{ role: 'user', content: msg }],
+    messages: [
+      { role: 'system', content: '조건: 1줄로 대답하라' },
+      { role: 'user', content: msg },
+    ],
   }
 
   try {

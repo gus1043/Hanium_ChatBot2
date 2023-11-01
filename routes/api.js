@@ -698,8 +698,11 @@ apiRouter.post('/controlmonitor', function (req, res) {
 
 // '/chatgpt' 엔드포인트에 대한 POST 요청 핸들러
 apiRouter.post('/chatgpt', async function (req, res) {
-  const { userRequest } = req.body
-  const utterance = userRequest.utterance
+  // const { userRequest } = req.body
+  // const utterance = userRequest.utterance
+
+  const utterance =
+    '머리로는 못해 이해를 정신 건강에 도움이 그녀를 마시고 취할 거야 24345+345234*35451*252*234의 값은?'
 
   function containsKeywords(utterance) {
     const keywords = [
@@ -954,14 +957,8 @@ async function getResponse(msg) {
     ],
   }
 
-  const timeoutPromise = new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve('타임아웃입니다')
-    }, 4000) // 4초 타임아웃 설정
-  })
-
   try {
-    const responsePromise = axios.post(
+    const response = await axios.post(
       'https://api.openai.com/v1/chat/completions',
       data,
       {
@@ -969,20 +966,12 @@ async function getResponse(msg) {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${OPENAI_API_KEY}`,
         },
+        timeout: 200000,
       },
     )
 
-    const [response, timeout] = await Promise.race([
-      responsePromise,
-      timeoutPromise,
-    ])
-
-    if (timeout === '타임아웃입니다') {
-      return timeout
-    } else {
-      const result1 = response.data.choices[0].message.content
-      return result1
-    }
+    const result1 = response.data.choices[0].message.content
+    return result1
   } catch (e) {
     console.error('OpenAI API 오류:', e.response?.data?.error || e.message || e)
     throw e

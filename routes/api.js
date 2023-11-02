@@ -1020,14 +1020,19 @@ apiRouter.post('/chatgpt', async function (req, res) {
       // OpenAI API에 메시지 전달하고 응답 받기
       const resGPT = await getResponse(utterance)
 
+      const responseMes = resGPT
+        ? '챗봇이 답을 작성하고 있어요. 잠시만 기다려 주세요.'
+        : '챗봇이 답을 생성하지 못했어요. 다시 시도해 주세요'
+
       // ChatGPT 응답을 카카오톡 플러스친구 API에 맞는 형식으로 변환
       const responseBody = {
         version: '2.0',
+        useCallback: true,
         template: {
           outputs: [
             {
               simpleText: {
-                text: resGPT,
+                text: responseMes,
               },
             },
           ],

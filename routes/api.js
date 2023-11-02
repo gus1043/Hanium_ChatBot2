@@ -1024,7 +1024,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
       //    '챗봇이 답을 작성하고 있어요. 잠시만 기다려 주세요.'
       //   : '챗봇이 답을 생성하지 못했어요. 다시 시도해 주세요.'
 
-      const { userRequest } = req.body
+      // const { userRequest } = req.body
       // const utterance = userRequest.utterance
 
       // ChatGPT 응답을 카카오톡 플러스친구 API에 맞는 형식으로 변환
@@ -1048,39 +1048,38 @@ apiRouter.post('/chatgpt', async function (req, res) {
       res.status(500).send('Error generating response')
     }
 
-    console.log(userRequest)
+    // console.log(userRequest)
 
-    // apiRouter.post('/callback_request', async (req, res) => {
-    //   try {
-    //     const resGPT = await getResponse(utterance)
+    apiRouter.post('/callback_request', async (req, res) => {
+      try {
+        const resGPT = await getResponse(utterance)
 
-    //     const callbackUrl = userRequest.callbackUrl
+        const callbackUrl = userRequest.callbackUrl
 
-    //     const response = axios.post(callbackUrl, {
-    //       version: '2.0',
-    //       template: {
-    //         outputs: [
-    //           {
-    //             simpleText: {
-    //               text: resGPT,
-    //             },
-    //           },
-    //         ],
-    //       },
-    //     })
+        const response = axios.post(callbackUrl, {
+          version: '2.0',
+          template: {
+            outputs: [
+              {
+                simpleText: {
+                  text: resGPT,
+                },
+              },
+            ],
+          },
+        })
 
-    //     res.status(200).send(response)
-    //   } catch (error) {
-    //     // 오류 정보를 더 자세하게 출력하기
-    //     console.error('Error calling OpenAI API:')
-    //     console.error('Error message:', error.message)
-    //     if (error.response) {
-    //       console.error('Response status:', error.response.status)
-    //       console.error('Response data:', error.response.data)
-    //     }
-    //     res.status(500).send('Error generating response')
-    //   }
-    // })
+        res.status(200).send(response)
+      } catch (error) {
+        console.error('Error calling OpenAI API:')
+        console.error('Error message:', error.message)
+        if (error.response) {
+          console.error('Response status:', error.response.status)
+          console.error('Response data:', error.response.data)
+        }
+        res.status(500).send('Error generating response')
+      }
+    })
   }
 })
 

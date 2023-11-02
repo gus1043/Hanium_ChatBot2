@@ -1017,28 +1017,27 @@ apiRouter.post('/chatgpt', async function (req, res) {
     }
   } else {
     try {
-      app.post('/webhook/', async (req, res) => {
-        const request_data = req.body
-        const call_back = await axios.post(request_data.callback_url, {
-          version: '2.0',
-          template: {
-            outputs: [
-              {
-                simpleText: {
-                  text: request_data.result.choices[0].message.content,
-                },
+      const user_request = req.body.userRequest || {}
+      const callback_url = user_request.callbackUrl
+      const request_data = req.body
+      const call_back = await axios.post(request_data.callback_url, {
+        version: '2.0',
+        template: {
+          outputs: [
+            {
+              simpleText: {
+                text: request_data.result.choices[0].message.content,
               },
-            ],
-          },
-        })
-        console.log(call_back.status, call_back.data)
-        res.send('OK')
+            },
+          ],
+        },
       })
+      console.log(call_back.status, call_back.data)
+      res.send('OK')
 
-      app.post('/question', async (req, res) => {
-        const user_request = req.body.userRequest || {}
-        const callback_url = user_request.callbackUrl
-
+      app.post(callback_url, async (req, res) => {
+        console.log(userRequest)
+        console.log(callback_url)
         const data = {
           model: 'gpt-3.5-turbo',
           messages: [{ role: 'user', content: utterance }],
@@ -1065,7 +1064,15 @@ apiRouter.post('/chatgpt', async function (req, res) {
           useCallback: true,
         })
       })
-    } catch {}
+    } catch (error) {
+      console.error('Error calling OpenAI API:')
+      console.error('Error message:', error.message)
+      if (error.response) {
+        console.error('Response status:', error.response.status)
+        console.error('Response data:', error.response.data)
+      }
+      res.status(500).send('Error generating response')
+    }
   }
 })
 

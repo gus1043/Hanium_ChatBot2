@@ -1023,6 +1023,8 @@ apiRouter.post('/chatgpt', async function (req, res) {
       template: {},
     })
 
+    const resGPT = await getResponse(utterance)
+
     async function getResponse(msg) {
       const data = {
         model: 'gpt-3.5-turbo',
@@ -1046,8 +1048,6 @@ apiRouter.post('/chatgpt', async function (req, res) {
         return result1
       } catch {}
     }
-
-    const resGPT = await getResponse(utterance)
 
     try {
       // 콜백 호출

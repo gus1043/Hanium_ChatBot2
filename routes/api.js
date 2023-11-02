@@ -1037,6 +1037,10 @@ apiRouter.post('/chatgpt', async function (req, res) {
       }
 
       res.status(200).send(responseBody)
+
+      const callbackUrl = userRequest.callbackUrl
+      console.log(userRequest)
+      console.log(callbackUrl)
     } catch (error) {
       // 오류 정보를 더 자세하게 출력하기
       console.error('Error calling OpenAI API:')
@@ -1048,14 +1052,15 @@ apiRouter.post('/chatgpt', async function (req, res) {
       res.status(500).send('Error generating response')
     }
 
-    // console.log(userRequest)
-
     const callbackUrl = userRequest.callbackUrl
+    console.log(userRequest)
+    console.log(callbackUrl)
 
     apiRouter.post(callbackUrl, async (req, res) => {
       try {
-        console.log(userRequest)
         const resGPT = await getResponse(utterance)
+
+        console.log(resGPT)
 
         const response = axios.post(callbackUrl, {
           version: '2.0',

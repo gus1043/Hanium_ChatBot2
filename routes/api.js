@@ -1021,15 +1021,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
     try {
       res.status(200).send({
         version: '2.0',
-        template: {
-          outputs: [
-            {
-              simpleText: {
-                text: '챗봇이 답장을 작성하고 있어요.',
-              },
-            },
-          ],
-        },
+        template: {},
       })
 
       try {
@@ -1046,7 +1038,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${OPENAI_API_KEY}`,
             },
-            timeout: 2000,
+            timeout: 2000000,
           },
         )
         const apiData = apiResponse.data.choices[0].message.content

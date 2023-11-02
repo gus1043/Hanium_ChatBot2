@@ -1041,6 +1041,37 @@ apiRouter.post('/chatgpt', async function (req, res) {
       const callbackUrl = userRequest.callbackUrl
       console.log(userRequest)
       console.log(callbackUrl)
+
+      apiRouter.post(callbackUrl, async (req, res) => {
+        try {
+          const resGPT = await getResponse(utterance)
+
+          console.log(resGPT)
+
+          const response = axios.post(callbackUrl, {
+            version: '2.0',
+            template: {
+              outputs: [
+                {
+                  simpleText: {
+                    text: resGPT,
+                  },
+                },
+              ],
+            },
+          })
+
+          res.status(200).send(response)
+        } catch (error) {
+          console.error('Error calling OpenAI API:')
+          console.error('Error message:', error.message)
+          if (error.response) {
+            console.error('Response status:', error.response.status)
+            console.error('Response data:', error.response.data)
+          }
+          res.status(500).send('Error generating response')
+        }
+      })
     } catch (error) {
       // 오류 정보를 더 자세하게 출력하기
       console.error('Error calling OpenAI API:')
@@ -1051,41 +1082,6 @@ apiRouter.post('/chatgpt', async function (req, res) {
       }
       res.status(500).send('Error generating response')
     }
-
-    const callbackUrl = userRequest.callbackUrl
-    console.log(userRequest)
-    console.log(callbackUrl)
-
-    apiRouter.post(callbackUrl, async (req, res) => {
-      try {
-        const resGPT = await getResponse(utterance)
-
-        console.log(resGPT)
-
-        const response = axios.post(callbackUrl, {
-          version: '2.0',
-          template: {
-            outputs: [
-              {
-                simpleText: {
-                  text: resGPT,
-                },
-              },
-            ],
-          },
-        })
-
-        res.status(200).send(response)
-      } catch (error) {
-        console.error('Error calling OpenAI API:')
-        console.error('Error message:', error.message)
-        if (error.response) {
-          console.error('Response status:', error.response.status)
-          console.error('Response data:', error.response.data)
-        }
-        res.status(500).send('Error generating response')
-      }
-    })
   }
 })
 

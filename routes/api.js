@@ -1037,7 +1037,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
       })
       res.send('OK')
 
-      app.post(callbackUrl, async (req, res) => {
+      apiRouter.post(callbackUrl, async (req, res) => {
         // console.log(userRequest)
         console.log(callbackUrl)
         const data = {

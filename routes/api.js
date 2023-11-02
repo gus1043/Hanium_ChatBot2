@@ -1018,19 +1018,19 @@ apiRouter.post('/chatgpt', async function (req, res) {
       }
     }
   } else {
-    try {
-      res.status(200).send({
-        version: '2.0',
-        template: {},
-      })
+    res.status(200).send({
+      version: '2.0',
+      template: {},
+    })
+
+    async function getResponse(msg) {
+      const data = {
+        model: 'gpt-3.5-turbo',
+        messages: [{ role: 'user', content: msg }],
+      }
 
       try {
-        const data = {
-          model: 'gpt-3.5-turbo',
-          messages: [{ role: 'user', content: utterance }],
-        }
-
-        const apiResponse = await axios.post(
+        const response = await axios.post(
           'https://api.openai.com/v1/chat/completions',
           data,
           {
@@ -1038,29 +1038,35 @@ apiRouter.post('/chatgpt', async function (req, res) {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${OPENAI_API_KEY}`,
             },
-            timeout: 2000000,
+            timeout: 200000,
           },
         )
-        const apiData = apiResponse.data.choices[0].message.content
 
-        // 콜백 호출
-        const callbackResponse = await axios.post(callbackUrl, {
-          version: '2.0',
-          useCallback: true,
-          data: {
-            text: apiData,
-          }, // 외부 API로부터 받은 데이터
-        })
+        const result1 = response.data.choices[0].message.content
+        return result1
+      } catch {}
+    }
 
-        if (callbackResponse.status === 200) {
-          console.log('Callback 호출 성공')
-        } else {
-          console.log('Callback 호출 실패:', callbackResponse.status)
-        }
-      } catch (error) {
-        console.error('API 호출 또는 Callback 호출 중 에러:', error)
+    const resGPT = await getResponse(utterance)
+
+    try {
+      // 콜백 호출
+      const callbackResponse = await axios.post(callbackUrl, {
+        version: '2.0',
+        useCallback: true,
+        data: {
+          text: resGPT,
+        }, // 외부 API로부터 받은 데이터
+      })
+
+      if (callbackResponse.status === 200) {
+        console.log('Callback 호출 성공')
+      } else {
+        console.log('Callback 호출 실패:', callbackResponse.status)
       }
-    } catch {}
+    } catch (error) {
+      console.error('API 호출 또는 Callback 호출 중 에러:', error)
+    }
   }
 })
 

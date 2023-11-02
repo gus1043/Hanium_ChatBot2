@@ -1106,8 +1106,6 @@ apiRouter.get('/get-switch-values', async (req, res) => {
       }
     }
 
-    // res.status(200).json({ switchValues })
-
     const responseBody = {
       version: '2.0',
       template: {

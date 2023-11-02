@@ -801,33 +801,12 @@ apiRouter.post('/controlmonitor-off', async function (req, res) {
   }
 })
 
-async function sendResponse(callbackUrl, response) {
-  const headers = {
-    'Content-Type': 'application/json; charset=utf-8',
-  }
-
-  try {
-    const res = await axios.post(callbackUrl, response, {
-      headers: headers,
-    })
-
-    console.log('response: ', response)
-
-    // 예외처리
-    if (res.status !== 200) {
-      console.log(`Failed to send response: ${res.status}, ${res.data}`)
-    } else {
-      console.log('Response successfully sent')
-    }
-  } catch (error) {
-    console.error('Error sending the response: ' + error.message)
-  }
-}
-
 // '/chatgpt' 엔드포인트에 대한 POST 요청 핸들러
 apiRouter.post('/chatgpt', async function (req, res) {
-  const { userRequest } = req.body
-  const utterance = userRequest.utterance
+  // const { userRequest } = req.body
+  // const utterance = userRequest.utterance
+
+  const utterance = '천안의 54대 문명을 말하라'
 
   function containsKeywords(utterance) {
     const keywords = [
@@ -1043,21 +1022,46 @@ apiRouter.post('/chatgpt', async function (req, res) {
       // OpenAI API에 메시지 전달하고 응답 받기
       const resGPT = await getResponse(utterance)
 
-      const responseMessage = resGPT
-        ? '챗봇이 답을 작성하고 있어요. 잠시만 기다려 주세요.'
-        : '챗봇이 답을 생성하지 못했어요. 다시 시도해 주세요.'
+      // const responseMessage = resGPT
+      //    '챗봇이 답을 작성하고 있어요. 잠시만 기다려 주세요.'
+      //   : '챗봇이 답을 생성하지 못했어요. 다시 시도해 주세요.'
 
       // ChatGPT 응답을 카카오톡 플러스친구 API에 맞는 형식으로 변환
       const responseBody = {
         version: '2.0',
         useCallback: true,
         data: {
-          text: responseMessage,
+          text: '잠시만 기다려 주십쇼',
         },
       }
 
-      // 변환된 응답 보내기
-      await sendResponse(body.callbackUrl, responseBody)
+      res.status(200).send(responseBody)
+
+      app.post('/callback_request', async (req, res) => {
+        try {
+          const callbackUrl = req.body.userRequest.callbackUrl
+
+          const response = await axios.post(callbackUrl, {
+            version: '2.0',
+            template: {
+              outputs: [
+                {
+                  simpleText: {
+                    text: resGPT,
+                  },
+                },
+              ],
+            },
+          })
+
+          console.log(response.status, response.data)
+
+          res.status(200).send('OK')
+        } catch (error) {
+          console.error('Error sending callback:', error.message)
+          res.status(500).send('Error sending callback')
+        }
+      })
     } catch (error) {
       // 오류 정보를 더 자세하게 출력하기
       console.error('Error calling OpenAI API:')

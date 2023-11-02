@@ -1050,12 +1050,12 @@ apiRouter.post('/chatgpt', async function (req, res) {
 
     // console.log(userRequest)
 
-    apiRouter.post('/callback_request', async (req, res) => {
+    const callbackUrl = userRequest.callbackUrl
+
+    apiRouter.post(callbackUrl, async (req, res) => {
       try {
         console.log(userRequest)
         const resGPT = await getResponse(utterance)
-
-        const callbackUrl = userRequest.callbackUrl
 
         const response = axios.post(callbackUrl, {
           version: '2.0',

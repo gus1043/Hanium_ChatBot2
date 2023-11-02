@@ -1023,7 +1023,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
       const callbackUrl = userRequest.callbackUrl
       const request_data = req.body
 
-      axios.post(callbackUrl, {
+      apiRouter.post(callbackUrl, {
         version: '2.0',
         template: {
           outputs: [
@@ -1037,51 +1037,47 @@ apiRouter.post('/chatgpt', async function (req, res) {
       })
       res.send('OK')
 
-      apiRouter.post(callbackUrl, async (req, res) => {
-        // console.log(userRequest)
-        console.log(callbackUrl)
-        const data = {
-          model: 'gpt-3.5-turbo',
-          messages: [{ role: 'user', content: utterance }],
-        }
-        try {
-          const response = await axios.post(
-            'https://api.openai.com/v1/chat/completions',
-            data,
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${OPENAI_API_KEY}`,
-              },
-              timeout: 2000,
+      const data = {
+        model: 'gpt-3.5-turbo',
+        messages: [{ role: 'user', content: utterance }],
+      }
+      try {
+        const response = await axios.post(
+          'https://api.openai.com/v1/chat/completions',
+          data,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${OPENAI_API_KEY}`,
             },
-          )
+            timeout: 2000,
+          },
+        )
 
-          const result1 = await response.data.choices[0].message.content
-          const responseBody = {
+        const result1 = await response.data.choices[0].message.content
+        const responseBody = {
+          version: '2.0',
+          useCallback: true,
+          template: {
+            outputs: [
+              {
+                simpleText: {
+                  text: result1,
+                },
+              },
+            ],
+          },
+        }
+        // 변환된 응답 보내기
+        res.status(200).send(responseBody)
+      } catch (error) {
+        if (error.code === 'ECONNABORTED') {
+          res.send({
             version: '2.0',
             useCallback: true,
-            template: {
-              outputs: [
-                {
-                  simpleText: {
-                    text: result1,
-                  },
-                },
-              ],
-            },
-          }
-          // 변환된 응답 보내기
-          res.status(200).send(responseBody)
-        } catch (error) {
-          if (error.code === 'ECONNABORTED') {
-            res.send({
-              version: '2.0',
-              useCallback: true,
-            })
-          }
+          })
         }
-      })
+      }
     } catch (error) {
       console.error('Error calling OpenAI API:')
       console.error('Error message:', error.message)

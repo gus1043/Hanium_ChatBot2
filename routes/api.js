@@ -1067,7 +1067,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
           },
         })
 
-        res.status(200).send('OK')
+        res.status(200).send(response)
       } catch (error) {
         console.error('Error sending callback:', error.message)
         res.status(500).send('Error sending callback')

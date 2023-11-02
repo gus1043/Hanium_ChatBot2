@@ -784,7 +784,6 @@ apiRouter.post('/controlmonitor-off', async function (req, res) {
           {
             basicCard: {
               title: '발표장에 있는 모니터의 전원이 꺼졌어요.',
-              description: '조용하고 편안하게 공기를 정화할게요.',
               thumbnail: {
                 imageUrl:
                   'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/7.jpg',

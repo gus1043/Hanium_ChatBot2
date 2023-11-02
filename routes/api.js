@@ -1063,9 +1063,10 @@ apiRouter.post('/chatgpt', async function (req, res) {
           })
         }
       }
+    }catch{
+      
     }
   }
-})
 
 // // API 엔드포인트 경로
 // apiRouter.get('/get-switch-values', async (req, res) => {

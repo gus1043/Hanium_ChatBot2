@@ -1023,9 +1023,6 @@ apiRouter.post('/chatgpt', async function (req, res) {
       const callbackUrl = userRequest.callbackUrl
       const request_data = req.body
 
-      console.log(callbackUrl)
-      console.log(request_data)
-
       const call_back = await axios.post(callbackUrl, {
         version: '2.0',
         template: {
@@ -1060,15 +1057,31 @@ apiRouter.post('/chatgpt', async function (req, res) {
               timeout: 2000,
             },
           )
+
+          const result1 = await response.data.choices[0].message.content
+          const responseBody = {
+            version: '2.0',
+            useCallback: true,
+            template: {
+              outputs: [
+                {
+                  simpleText: {
+                    text: result1,
+                  },
+                },
+              ],
+            },
+          }
+          // 변환된 응답 보내기
+          res.status(200).send(responseBody)
         } catch (error) {
           if (error.code === 'ECONNABORTED') {
-            console.log('Timeout occurs')
+            res.send({
+              version: '2.0',
+              useCallback: true,
+            })
           }
         }
-        res.json({
-          version: '2.0',
-          useCallback: true,
-        })
       })
     } catch (error) {
       console.error('Error calling OpenAI API:')

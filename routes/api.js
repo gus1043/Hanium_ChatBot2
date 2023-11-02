@@ -803,10 +803,8 @@ apiRouter.post('/controlmonitor-off', async function (req, res) {
 
 // '/chatgpt' 엔드포인트에 대한 POST 요청 핸들러
 apiRouter.post('/chatgpt', async function (req, res) {
-  // const { userRequest } = req.body
-  // const utterance = userRequest.utterance
-
-  const utterance = '천안의 54대 문명을 말하라'
+  const { userRequest } = req.body
+  const utterance = userRequest.utterance
 
   function containsKeywords(utterance) {
     const keywords = [
@@ -1020,11 +1018,14 @@ apiRouter.post('/chatgpt', async function (req, res) {
   } else {
     try {
       // OpenAI API에 메시지 전달하고 응답 받기
-      const resGPT = await getResponse(utterance)
+      // const resGPT = await getResponse(utterance)
 
       // const responseMessage = resGPT
       //    '챗봇이 답을 작성하고 있어요. 잠시만 기다려 주세요.'
       //   : '챗봇이 답을 생성하지 못했어요. 다시 시도해 주세요.'
+
+      // const { userRequest } = req.body
+      // const utterance = userRequest.utterance
 
       // ChatGPT 응답을 카카오톡 플러스친구 API에 맞는 형식으로 변환
       const responseBody = {
@@ -1036,32 +1037,6 @@ apiRouter.post('/chatgpt', async function (req, res) {
       }
 
       res.status(200).send(responseBody)
-
-      app.post('/callback_request', async (req, res) => {
-        try {
-          const callbackUrl = req.body.userRequest.callbackUrl
-
-          const response = await axios.post(callbackUrl, {
-            version: '2.0',
-            template: {
-              outputs: [
-                {
-                  simpleText: {
-                    text: resGPT,
-                  },
-                },
-              ],
-            },
-          })
-
-          console.log(response.status, response.data)
-
-          res.status(200).send('OK')
-        } catch (error) {
-          console.error('Error sending callback:', error.message)
-          res.status(500).send('Error sending callback')
-        }
-      })
     } catch (error) {
       // 오류 정보를 더 자세하게 출력하기
       console.error('Error calling OpenAI API:')
@@ -1072,6 +1047,34 @@ apiRouter.post('/chatgpt', async function (req, res) {
       }
       res.status(500).send('Error generating response')
     }
+
+    console.log(userRequest)
+
+    apiRouter.post('/callback_request', async (req, res) => {
+      try {
+        const callbackUrl = await userRequest.callbackUrl
+
+        const response = await axios.post(callbackUrl, {
+          version: '2.0',
+          template: {
+            outputs: [
+              {
+                simpleText: {
+                  text: resGPT,
+                },
+              },
+            ],
+          },
+        })
+
+        console.log(response.status, response.data)
+
+        res.status(200).send('OK')
+      } catch (error) {
+        console.error('Error sending callback:', error.message)
+        res.status(500).send('Error sending callback')
+      }
+    })
   }
 })
 

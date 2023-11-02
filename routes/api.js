@@ -786,7 +786,7 @@ apiRouter.post('/controlmonitor-off', async function (req, res) {
               title: '발표장에 있는 모니터의 전원이 꺼졌어요.',
               thumbnail: {
                 imageUrl:
-                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/7.jpg',
+                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/monit.png',
               },
             },
           },
@@ -1053,10 +1053,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
 async function getResponse(msg) {
   const data = {
     model: 'gpt-3.5-turbo',
-    messages: [
-      { role: 'system', content: '조건: 1줄로 대답하라' },
-      { role: 'user', content: msg },
-    ],
+    messages: [{ role: 'user', content: msg }],
   }
 
   try {

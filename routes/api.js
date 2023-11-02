@@ -1035,11 +1035,10 @@ apiRouter.post('/chatgpt', async function (req, res) {
           ],
         },
       })
-      console.log(call_back.status, call_back.data)
       res.send('OK')
 
       app.post(callbackUrl, async (req, res) => {
-        console.log(userRequest)
+        // console.log(userRequest)
         console.log(callbackUrl)
         const data = {
           model: 'gpt-3.5-turbo',

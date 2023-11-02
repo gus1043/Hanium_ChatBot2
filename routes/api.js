@@ -1047,7 +1047,9 @@ apiRouter.post('/chatgpt', async function (req, res) {
         const callbackResponse = await axios.post(callbackUrl, {
           version: '2.0',
           useCallback: true,
-          data: apiData, // 외부 API로부터 받은 데이터
+          data: {
+            text: apiData,
+          }, // 외부 API로부터 받은 데이터
         })
 
         if (callbackResponse.status === 200) {

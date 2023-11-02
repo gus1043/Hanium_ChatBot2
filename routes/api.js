@@ -1017,34 +1017,14 @@ apiRouter.post('/chatgpt', async function (req, res) {
     }
   } else {
     try {
-      // OpenAI API에 메시지 전달하고 응답 받기
-      // const resGPT = await getResponse(utterance)
-
-      // const responseMessage = resGPT
-      //    '챗봇이 답을 작성하고 있어요. 잠시만 기다려 주세요.'
-      //   : '챗봇이 답을 생성하지 못했어요. 다시 시도해 주세요.'
-
-      // const { userRequest } = req.body
-      // const utterance = userRequest.utterance
-
-      // ChatGPT 응답을 카카오톡 플러스친구 API에 맞는 형식으로 변환
-      const responseBody = {
-        version: '2.0',
-        useCallback: true,
-        data: {
-          text: '잠시만 기다려 주십쇼',
-        },
-      }
-
-      res.status(200).send(responseBody)
-
-      const callbackUrl = userRequest.callbackUrl
-      console.log(userRequest)
-      console.log(callbackUrl)
+      // OpenAI API로 메시지를 보내고 응답을 받는 함수
+      await getResponse(utterance)
 
       apiRouter.post(callbackUrl, async (req, res) => {
         try {
-          const resGPT = await getResponse(utterance)
+          const callbackUrl = userRequest.callbackUrl
+          console.log(userRequest)
+          console.log(callbackUrl)
 
           console.log(resGPT)
 
@@ -1072,6 +1052,42 @@ apiRouter.post('/chatgpt', async function (req, res) {
           res.status(500).send('Error generating response')
         }
       })
+
+      async function getResponse(userRequest, utterance) {
+        callbackUrl = userRequest.callbackUrl
+
+        const data = {
+          model: 'gpt-3.5-turbo',
+          messages: [{ role: 'user', content: utterance }],
+        }
+
+        try {
+          const response = await axios.post(
+            'https://api.openai.com/v1/chat/completions',
+            data,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${OPENAI_API_KEY}`,
+              },
+              timeout: 2000,
+            },
+          )
+        } catch (error) {
+          if (error.code === 'ECONNABORTED') {
+            // Handle a timeout error by doing nothing (pass)
+            // You can add your custom handling logic here if needed
+          } else {
+            // Handle other errors here
+          }
+        }
+        res.status(200).send(
+          responseBody.json({
+            version: '2.0',
+            useCallback: true,
+          }),
+        )
+      }
     } catch (error) {
       // 오류 정보를 더 자세하게 출력하기
       console.error('Error calling OpenAI API:')
@@ -1084,34 +1100,6 @@ apiRouter.post('/chatgpt', async function (req, res) {
     }
   }
 })
-
-// OpenAI API로 메시지를 보내고 응답을 받는 함수
-async function getResponse(msg) {
-  const data = {
-    model: 'gpt-3.5-turbo',
-    messages: [{ role: 'user', content: msg }],
-  }
-
-  try {
-    const response = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
-      data,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
-        },
-        timeout: 200000,
-      },
-    )
-
-    const result1 = response.data.choices[0].message.content
-    return result1
-  } catch (e) {
-    console.error('OpenAI API 오류:', e.response?.data?.error || e.message || e)
-    throw e
-  }
-}
 
 // API 엔드포인트 경로
 apiRouter.get('/get-switch-values', async (req, res) => {

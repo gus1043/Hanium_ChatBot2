@@ -1081,12 +1081,10 @@ apiRouter.post('/chatgpt', async function (req, res) {
             // Handle other errors here
           }
         }
-        res.status(200).send(
-          responseBody.json({
-            version: '2.0',
-            useCallback: true,
-          }),
-        )
+        res.status(200).send({
+          version: '2.0',
+          useCallback: true,
+        })
       }
     } catch (error) {
       // 오류 정보를 더 자세하게 출력하기

@@ -806,6 +806,8 @@ apiRouter.post('/chatgpt', async function (req, res) {
   const { userRequest } = req.body
   const utterance = userRequest.utterance
 
+  const callbackUrl = req.body.userRequest.callbackUrl
+
   function containsKeywords(utterance) {
     const keywords = [
       '조명',
@@ -1017,32 +1019,26 @@ apiRouter.post('/chatgpt', async function (req, res) {
     }
   } else {
     try {
-      // const { userRequest } = req.body
-      // const utterance = userRequest.utterance
-
-      const callbackUrl = userRequest.callbackUrl
-      const request_data = req.body
-
-      apiRouter.post(callbackUrl, {
+      res.status(200).send({
         version: '2.0',
         template: {
           outputs: [
             {
               simpleText: {
-                text: request_data.result,
+                text: '챗봇이 답장을 작성하고 있어요.',
               },
             },
           ],
         },
       })
-      res.send('OK')
 
-      const data = {
-        model: 'gpt-3.5-turbo',
-        messages: [{ role: 'user', content: utterance }],
-      }
       try {
-        const response = await axios.post(
+        const data = {
+          model: 'gpt-3.5-turbo',
+          messages: [{ role: 'user', content: utterance }],
+        }
+
+        const apiResponse = await axios.post(
           'https://api.openai.com/v1/chat/completions',
           data,
           {
@@ -1053,42 +1049,97 @@ apiRouter.post('/chatgpt', async function (req, res) {
             timeout: 2000,
           },
         )
+        const apiData = apiResponse.data.choices[0].message.content
 
-        const result1 = await response.data.choices[0].message.content
-        const responseBody = {
+        // 콜백 호출
+        const callbackResponse = await axios.post(callbackUrl, {
           version: '2.0',
           useCallback: true,
-          template: {
-            outputs: [
-              {
-                simpleText: {
-                  text: result1,
-                },
-              },
-            ],
-          },
+          data: apiData, // 외부 API로부터 받은 데이터
+        })
+
+        if (callbackResponse.status === 200) {
+          console.log('Callback 호출 성공')
+        } else {
+          console.log('Callback 호출 실패:', callbackResponse.status)
         }
-        // 변환된 응답 보내기
-        res.status(200).send(responseBody)
       } catch (error) {
-        if (error.code === 'ECONNABORTED') {
-          res.send({
-            version: '2.0',
-            useCallback: true,
-          })
-        }
+        console.error('API 호출 또는 Callback 호출 중 에러:', error)
       }
-    } catch (error) {
-      console.error('Error calling OpenAI API:')
-      console.error('Error message:', error.message)
-      if (error.response) {
-        console.error('Response status:', error.response.status)
-        console.error('Response data:', error.response.data)
-      }
-      res.status(500).send('Error generating response')
-    }
+    } catch {}
   }
 })
+
+// const { userRequest } = req.body
+// const utterance = userRequest.utterance
+
+//   const callbackUrl = userRequest.callbackUrl
+//   const request_data = req.body
+
+//   apiRouter.post(callbackUrl, {
+//     version: '2.0',
+//     template: {
+//       outputs: [
+//         {
+//           simpleText: {
+//             text: request_data.result,
+//           },
+//         },
+//       ],
+//     },
+//   })
+//   res.send('OK')
+
+// const data = {
+//   model: 'gpt-3.5-turbo',
+//   messages: [{ role: 'user', content: utterance }],
+// }
+//   try {
+// const response = await axios.post(
+//   'https://api.openai.com/v1/chat/completions',
+//   data,
+//   {
+//     headers: {
+//       'Content-Type': 'application/json',
+//       Authorization: `Bearer ${OPENAI_API_KEY}`,
+//     },
+//     timeout: 2000,
+//   },
+// )
+
+//     const result1 = await response.data.choices[0].message.content
+//     const responseBody = {
+//       version: '2.0',
+//       useCallback: true,
+//       template: {
+//         outputs: [
+//           {
+//             simpleText: {
+//               text: result1,
+//             },
+//           },
+//         ],
+//       },
+//     }
+//     // 변환된 응답 보내기
+//     res.status(200).send(responseBody)
+//   } catch (error) {
+//     if (error.code === 'ECONNABORTED') {
+//       res.send({
+//         version: '2.0',
+//         useCallback: true,
+//       })
+//     }
+//   }
+// } catch (error) {
+//   console.error('Error calling OpenAI API:')
+//   console.error('Error message:', error.message)
+//   if (error.response) {
+//     console.error('Response status:', error.response.status)
+//     console.error('Response data:', error.response.data)
+//   }
+//   res.status(500).send('Error generating response')
+// }
 
 // // API 엔드포인트 경로
 // apiRouter.get('/get-switch-values', async (req, res) => {

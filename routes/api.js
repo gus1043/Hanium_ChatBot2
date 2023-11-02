@@ -1048,13 +1048,15 @@ apiRouter.post('/chatgpt', async function (req, res) {
       res.status(500).send('Error generating response')
     }
 
+    console.log(userRequest)
+
     apiRouter.post('/callback_request', async (req, res) => {
       try {
         const resGPT = await getResponse(utterance)
 
-        const callbackUrl = await userRequest.callbackUrl
+        const callbackUrl = userRequest.callbackUrl
 
-        const response = await axios.post(callbackUrl, {
+        const response = axios.post(callbackUrl, {
           version: '2.0',
           template: {
             outputs: [
@@ -1067,12 +1069,16 @@ apiRouter.post('/chatgpt', async function (req, res) {
           },
         })
 
-        console.log(response.status, response.data)
-
-        res.status(200).send('OK')
+        res.status(200).send(response)
       } catch (error) {
-        console.error('Error sending callback:', error.message)
-        res.status(500).send('Error sending callback')
+        // 오류 정보를 더 자세하게 출력하기
+        console.error('Error calling OpenAI API:')
+        console.error('Error message:', error.message)
+        if (error.response) {
+          console.error('Response status:', error.response.status)
+          console.error('Response data:', error.response.data)
+        }
+        res.status(500).send('Error generating response')
       }
     })
   }

@@ -1050,7 +1050,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
 
     console.log(userRequest)
 
-    apiRouter.post('/callback_request', async (req, res) => {
+    apiRouter.post('/callback_request', async (userRequest, res) => {
       try {
         const resGPT = await getResponse(utterance)
 

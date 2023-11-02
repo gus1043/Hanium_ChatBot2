@@ -1048,7 +1048,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
 
           console.log(resGPT)
 
-          const response = {
+          const responseBody = {
             version: '2.0',
             template: {
               outputs: [
@@ -1061,7 +1061,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
             },
           }
 
-          res.status(200).send(response)
+          res.status(200).send(responseBody)
         } catch (error) {
           console.error('Error calling OpenAI API:')
           console.error('Error message:', error.message)

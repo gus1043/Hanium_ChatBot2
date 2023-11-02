@@ -1026,7 +1026,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
           outputs: [
             {
               simpleText: {
-                text: request_data.result.choices[0].message.content,
+                text: request_data.result,
               },
             },
           ],

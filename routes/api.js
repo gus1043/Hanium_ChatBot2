@@ -1048,7 +1048,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
 
           console.log(resGPT)
 
-          const response = axios.post(callbackUrl, {
+          const response = {
             version: '2.0',
             template: {
               outputs: [
@@ -1059,7 +1059,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
                 },
               ],
             },
-          })
+          }
 
           res.status(200).send(response)
         } catch (error) {

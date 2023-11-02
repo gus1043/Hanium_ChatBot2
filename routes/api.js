@@ -1052,7 +1052,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
       try {
         const resGPT = await getResponse(utterance)
 
-        const callbackUrl = userRequest.callbackUrl
+        const callbackUrl = await userRequest.callbackUrl
 
         const response = await axios.post(callbackUrl, {
           version: '2.0',
@@ -1067,7 +1067,9 @@ apiRouter.post('/chatgpt', async function (req, res) {
           },
         })
 
-        res.status(200).send(response)
+        console.log(response.status, response.data)
+
+        res.status(200).send('OK')
       } catch (error) {
         console.error('Error sending callback:', error.message)
         res.status(500).send('Error sending callback')

@@ -1048,8 +1048,6 @@ apiRouter.post('/chatgpt', async function (req, res) {
       res.status(500).send('Error generating response')
     }
 
-    console.log(userRequest)
-
     apiRouter.post('/callback_request', async (req, res) => {
       try {
         const resGPT = await getResponse(utterance)

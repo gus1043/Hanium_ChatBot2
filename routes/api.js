@@ -6,6 +6,7 @@ const AIR_DEVICE_NUM = process.env.AIR_DEVICE_NUM
 const BULB_DEVICE_NUM = process.env.BULB_DEVICE_NUM
 const SMARTTHINGS_KEY = process.env.SMARTTHINGS_KEY
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY
+const MON_DEVICE_NUM = process.env.MON_DEVICE_NUM
 const NLP_KEY = process.env.NLP_KEY
 
 const language = require('@google-cloud/language').v2
@@ -342,7 +343,7 @@ apiRouter.post('/controlair-on', async function (req, res) {
         outputs: [
           {
             basicCard: {
-              title: '거실에 있는 공기청정기의 전원이 켜졌어요.',
+              title: '발표장에 있는 공기청정기의 전원이 켜졌어요.',
               thumbnail: {
                 imageUrl: 'https://i.ibb.co/PW82Bdh/air-on.jpg',
               },
@@ -406,7 +407,7 @@ apiRouter.post('/controlair-off', async function (req, res) {
         outputs: [
           {
             basicCard: {
-              title: '거실에 있는 공기청정기의 전원이 꺼졌어요.',
+              title: '발표장에 있는 공기청정기의 전원이 꺼졌어요.',
               thumbnail: {
                 imageUrl: 'https://i.ibb.co/qknd4r0/air-off.jpg',
               },
@@ -467,10 +468,11 @@ apiRouter.post('/controlair-low', async function (req, res) {
         outputs: [
           {
             basicCard: {
-              title: '거실에 있는 공기청정기의 세기가 미풍으로 변경되었어요.',
+              title: '발표장에 있는 공기청정기의 세기가 미풍으로 변경되었어요.',
               description: '약한 바람으로 조용하게 공기를 정화할게요.',
               thumbnail: {
-                imageUrl: 'https://i.ibb.co/pzrPCzD/air-low.jpg',
+                imageUrl:
+                  ' https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/4.jpg',
               },
             },
           },
@@ -530,10 +532,11 @@ apiRouter.post('/controlair-mid', async function (req, res) {
           {
             basicCard: {
               title:
-                '거실에 있는 공기청정기의 전원의 세기가 약풍으로 바뀌었어요.',
+                '발표장에 있는 공기청정기의 전원의 세기가 약풍으로 바뀌었어요.',
               description: '중간 바람을 활용해 효율적으로 공기를 정화할게요.',
               thumbnail: {
-                imageUrl: 'https://i.ibb.co/PN8NWHx/air-mid.jpg',
+                imageUrl:
+                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/1.jpg',
               },
             },
           },
@@ -593,10 +596,11 @@ apiRouter.post('/controlair-high', async function (req, res) {
           {
             basicCard: {
               title:
-                '거실에 있는 공기청정기의 전원의 세기가 강풍으로 바뀌었어요.',
+                '발표장에 있는 공기청정기의 전원의 세기가 강풍으로 바뀌었어요.',
               description: '입체 바람으로 강력하게 공기를 정화할게요.',
               thumbnail: {
-                imageUrl: 'https://i.ibb.co/xg1yZwh/air-high.jpg',
+                imageUrl:
+                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/3.jpg',
               },
             },
           },
@@ -656,10 +660,11 @@ apiRouter.post('/controlair-sleep', async function (req, res) {
           {
             basicCard: {
               title:
-                '거실에 있는 공기청정기의 전원의 세기가 수면풍으로 바뀌었어요.',
+                '발표장에 있는 공기청정기의 전원의 세기가 수면풍으로 바뀌었어요.',
               description: '조용하고 편안하게 공기를 정화할게요.',
               thumbnail: {
-                imageUrl: 'https://i.ibb.co/wSPBdYJ/air-sleep.jpg',
+                imageUrl:
+                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/2.jpg',
               },
             },
           },
@@ -674,26 +679,126 @@ apiRouter.post('/controlair-sleep', async function (req, res) {
   }
 })
 
-apiRouter.post('/controlmonitor', function (req, res) {
+apiRouter.post('/controlmonitor-on', async function (req, res) {
   // 채널, 소리, TV, 모니터 등 텍스트가 들어오면 실행
 
-  const { userRequest } = req.body
-  const utterance = userRequest.utterance
+  db.query(
+    'insert into count2 (date, monitorCnt, monitorDate) values(CURRENT_DATE, monitorCnt+1, now()) on duplicate key update monitorCnt = monitorCnt+1, monitorDate = CURRENT_TIMESTAMP',
+    function (err, results, fields) {
+      if (err) throw err
+      console.log(results)
+    },
+  )
 
-  const responseBody = {
-    version: '2.0',
-    template: {
-      outputs: [
+  try {
+    const url = `https://api.smartthings.com/v1/devices/${MON_DEVICE_NUM}/commands`
+    const jsonData = {
+      commands: [
         {
-          simpleText: {
-            text: 'monitor: ' + utterance,
-          },
+          component: 'main',
+          capability: 'switch',
+          command: 'on',
+          arguments: [],
+          name: 'on',
         },
       ],
-    },
-  }
+    }
 
-  res.status(200).send(responseBody)
+    const options = {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${SMARTTHINGS_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(jsonData),
+    }
+
+    const response = await fetch(url, options)
+    const data = await response.json()
+
+    const responseBody = {
+      version: '2.0',
+      template: {
+        outputs: [
+          {
+            basicCard: {
+              title: '발표장에 있는 모니터의 전원이 켜졌어요.',
+              thumbnail: {
+                imageUrl:
+                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/6.jpg',
+              },
+            },
+          },
+        ],
+      },
+    }
+
+    res.status(200).send(responseBody)
+  } catch (error) {
+    console.error('오류가 발생했습니다.', error)
+    res.status(500).send('오류가 발생했습니다.')
+  }
+})
+
+apiRouter.post('/controlmonitor-off', async function (req, res) {
+  // 채널, 소리, TV, 모니터 등 텍스트가 들어오면 실행
+
+  db.query(
+    'insert into count2 (date, monitorCnt, monitorDate) values(CURRENT_DATE, monitorCnt+1, now()) on duplicate key update monitorCnt = monitorCnt+1, monitorDate = CURRENT_TIMESTAMP',
+    function (err, results, fields) {
+      if (err) throw err
+      console.log(results)
+    },
+  )
+
+  try {
+    const url = `https://api.smartthings.com/v1/devices/${MON_DEVICE_NUM}/commands`
+    const jsonData = {
+      commands: [
+        {
+          component: 'main',
+          capability: 'switch',
+          command: 'off',
+          arguments: [],
+          name: 'off',
+        },
+      ],
+    }
+
+    const options = {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${SMARTTHINGS_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(jsonData),
+    }
+
+    const response = await fetch(url, options)
+    const data = await response.json()
+
+    const responseBody = {
+      version: '2.0',
+      template: {
+        outputs: [
+          {
+            basicCard: {
+              title: '발표장에 있는 모니터의 전원이 꺼졌어요.',
+              thumbnail: {
+                imageUrl:
+                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/monit.png',
+              },
+            },
+          },
+        ],
+      },
+    }
+
+    res.status(200).send(responseBody)
+  } catch (error) {
+    console.error('오류가 발생했습니다.', error)
+    res.status(500).send('오류가 발생했습니다.')
+  }
 })
 
 // '/chatgpt' 엔드포인트에 대한 POST 요청 핸들러
@@ -722,13 +827,13 @@ apiRouter.post('/chatgpt', async function (req, res) {
   if (containsKeywords(utterance)) {
     // 전등 제어 + 기분 관련 텍스트 들어오면 실행
 
-    // db.query(
-    //   'insert into count2 (date, lightCnt, lightDate) values(CURRENT_DATE, lightCnt+1, now()) on duplicate key update lightCnt = lightCnt+1, lightDate = CURRENT_TIMESTAMP',
-    //   function (err, results, fields) {
-    //     if (err) throw err
-    //     console.log(results)
-    //   },
-    // )
+    db.query(
+      'insert into count2 (date, lightCnt, lightDate) values(CURRENT_DATE, lightCnt+1, now()) on duplicate key update lightCnt = lightCnt+1, lightDate = CURRENT_TIMESTAMP',
+      function (err, results, fields) {
+        if (err) throw err
+        console.log(results)
+      },
+    )
 
     const resText = await translateText(utterance)
     console.log('resText:', resText)
@@ -913,23 +1018,24 @@ apiRouter.post('/chatgpt', async function (req, res) {
   } else {
     try {
       // OpenAI API에 메시지 전달하고 응답 받기
-      const resGPT = await getResponse(utterance)
+      // const resGPT = await getResponse(utterance)
+
+      // const responseMessage = resGPT
+      //    '챗봇이 답을 작성하고 있어요. 잠시만 기다려 주세요.'
+      //   : '챗봇이 답을 생성하지 못했어요. 다시 시도해 주세요.'
+
+      // const { userRequest } = req.body
+      // const utterance = userRequest.utterance
 
       // ChatGPT 응답을 카카오톡 플러스친구 API에 맞는 형식으로 변환
       const responseBody = {
         version: '2.0',
-        template: {
-          outputs: [
-            {
-              simpleText: {
-                text: resGPT,
-              },
-            },
-          ],
+        useCallback: true,
+        data: {
+          text: '잠시만 기다려 주십쇼',
         },
       }
 
-      // 변환된 응답 보내기
       res.status(200).send(responseBody)
     } catch (error) {
       // 오류 정보를 더 자세하게 출력하기
@@ -941,6 +1047,36 @@ apiRouter.post('/chatgpt', async function (req, res) {
       }
       res.status(500).send('Error generating response')
     }
+
+    console.log(userRequest)
+
+    apiRouter.post('/callback_request', async (req, res) => {
+      try {
+        const resGPT = await getResponse(utterance)
+
+        const callbackUrl = await userRequest.callbackUrl
+
+        const response = await axios.post(callbackUrl, {
+          version: '2.0',
+          template: {
+            outputs: [
+              {
+                simpleText: {
+                  text: resGPT,
+                },
+              },
+            ],
+          },
+        })
+
+        console.log(response.status, response.data)
+
+        res.status(200).send('OK')
+      } catch (error) {
+        console.error('Error sending callback:', error.message)
+        res.status(500).send('Error sending callback')
+      }
+    })
   }
 })
 
@@ -971,5 +1107,50 @@ async function getResponse(msg) {
     throw e
   }
 }
+
+// API 엔드포인트 경로
+apiRouter.get('/get-switch-values', async (req, res) => {
+  try {
+    const urls = [
+      `https://api.smartthings.com/v1/devices/${MON_DEVICE_NUM}/components/main/capabilities/switch/status`,
+      `https://api.smartthings.com/v1/devices/${BULB_DEVICE_NUM}/components/main/capabilities/switch/status`,
+      `https://api.smartthings.com/v1/devices/${AIR_DEVICE_NUM}/components/main/capabilities/switch/status`,
+    ]
+
+    const switchValues = []
+
+    for (const url of urls) {
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${SMARTTHINGS_KEY}`, // SmartThings API Key를 여기에 입력하세요.
+        },
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        const value = data.switch.value
+        switchValues.push(value)
+      }
+    }
+
+    const responseBody = {
+      version: '2.0',
+      template: {
+        outputs: [
+          {
+            simpleText: {
+              text: `실시간 장치 작동 현황입니다. 모니터의 상태는 ${switchValues[0]}, 전등의 상태는 ${switchValues[1]}, 공기청정기의 상태는 ${switchValues[2]}입니다. 오늘도 즐거운 하루 보내세요.`,
+            },
+          },
+        ],
+      },
+    }
+
+    res.status(200).send(responseBody)
+  } catch (error) {
+    console.error('오류가 발생했습니다.', error)
+    res.status(500).send('오류가 발생했습니다.')
+  }
+})
 
 module.exports = apiRouter

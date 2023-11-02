@@ -1017,10 +1017,16 @@ apiRouter.post('/chatgpt', async function (req, res) {
     }
   } else {
     try {
-      const user_request = req.body.userRequest || {}
-      const callback_url = user_request.callbackUrl
+      const { userRequest } = req.body
+      const utterance = userRequest.utterance
+
+      const callbackUrl = userRequest.callbackUrl
       const request_data = req.body
-      const call_back = await axios.post(request_data.callback_url, {
+
+      console.log(callbackUrl)
+      console.log(request_data)
+
+      const call_back = await axios.post(callbackUrl, {
         version: '2.0',
         template: {
           outputs: [
@@ -1035,9 +1041,9 @@ apiRouter.post('/chatgpt', async function (req, res) {
       console.log(call_back.status, call_back.data)
       res.send('OK')
 
-      app.post(callback_url, async (req, res) => {
+      app.post(callbackUrl, async (req, res) => {
         console.log(userRequest)
-        console.log(callback_url)
+        console.log(callbackUrl)
         const data = {
           model: 'gpt-3.5-turbo',
           messages: [{ role: 'user', content: utterance }],

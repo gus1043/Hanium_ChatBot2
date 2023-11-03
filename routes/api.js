@@ -1112,18 +1112,18 @@ apiRouter.post('/chatgpt', async function (req, res) {
       resGPT.includes('공기청정기를') &&
       (resGPT.includes('약풍으로') || resGPT.includes('약하게'))
     ) {
-      await axios.post('/controlair-mid')
+      axios.post('/controlair-mid')
     }
 
     if (
       resGPT.includes('공기청정기를') &&
       (resGPT.includes('강풍으로') || resGPT.includes('강하게'))
     ) {
-      await axios.post('/controlair-high')
+      axios.post('/controlair-high')
     }
 
     if (resGPT.includes('공기청정기를') && resGPT.includes('수면풍으로')) {
-      await axios.post('/controlair-sleep')
+      axios.post('/controlair-sleep')
     }
 
     if (
@@ -1133,7 +1133,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
         resGPT.includes('켜드릴게요') ||
         resGPT.includes('켤게요!'))
     ) {
-      await axios.post('/controlair-on')
+      axios.post('/controlair-on')
     }
 
     if (

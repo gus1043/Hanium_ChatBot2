@@ -61,8 +61,12 @@ apiRouter.post('/controlbulb-on', async function (req, res) {
       template: {
         outputs: [
           {
-            simpleText: {
-              text: '전등의 전원이 켜졌습니다.',
+            basicCard: {
+              title: '발표장에 있는 전등의 전원이 켜졌어요.',
+              thumbnail: {
+                imageUrl:
+                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/lightoff.png',
+              },
             },
           },
         ],
@@ -121,8 +125,12 @@ apiRouter.post('/controlbulb-off', async function (req, res) {
       template: {
         outputs: [
           {
-            simpleText: {
-              text: '전등의 전원이 꺼졌습니다.',
+            basicCard: {
+              title: '발표장에 있는 전등의 전원이 켜졌어요.',
+              thumbnail: {
+                imageUrl:
+                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/lighton.png',
+              },
             },
           },
         ],

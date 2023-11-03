@@ -1020,6 +1020,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
   } else {
     res.status(200).send({
       version: '2.0',
+      useCallback: true,
       template: {},
     })
 

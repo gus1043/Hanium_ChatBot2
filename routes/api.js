@@ -1021,15 +1021,6 @@ apiRouter.post('/chatgpt', async function (req, res) {
     res.status(200).send({
       version: '2.0',
       useCallback: true,
-      template: {
-        outputs: [
-          {
-            simpleText: {
-              text: '성공.',
-            },
-          },
-        ],
-      },
     })
 
     async function getResponse(msg) {
@@ -1037,9 +1028,9 @@ apiRouter.post('/chatgpt', async function (req, res) {
         model: 'gpt-3.5-turbo',
         messages: [
           {
-            role: 'assistant',
+            role: 'system',
             content:
-              '넌 모든 분야의 전문가이며, 대답이 정말 빨라. 친절하게 대답해 줘.',
+              '당신은 모든 분야의 전문가이며, 대답이 정말 빠릅니다. 20대의 친군한 여성처럼 친절하게 대답해 주세요. (조건: 10초 이내로)',
           },
           { role: 'user', content: msg },
         ],

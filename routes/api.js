@@ -61,8 +61,12 @@ apiRouter.post('/controlbulb-on', async function (req, res) {
       template: {
         outputs: [
           {
-            simpleText: {
-              text: '전등의 전원이 켜졌습니다.',
+            basicCard: {
+              title: '발표장에 있는 전등의 전원이 켜졌어요.',
+              thumbnail: {
+                imageUrl:
+                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/lightoff.png',
+              },
             },
           },
         ],
@@ -121,8 +125,12 @@ apiRouter.post('/controlbulb-off', async function (req, res) {
       template: {
         outputs: [
           {
-            simpleText: {
-              text: '전등의 전원이 꺼졌습니다.',
+            basicCard: {
+              title: '발표장에 있는 전등의 전원이 켜졌어요.',
+              thumbnail: {
+                imageUrl:
+                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/lighton.png',
+              },
             },
           },
         ],
@@ -472,7 +480,7 @@ apiRouter.post('/controlair-low', async function (req, res) {
               description: '약한 바람으로 조용하게 공기를 정화할게요.',
               thumbnail: {
                 imageUrl:
-                  ' https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/4.jpg',
+                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/22.png',
               },
             },
           },
@@ -1111,10 +1119,48 @@ async function getSwitchValues() {
   return switchValues
 }
 
+async function getAirValues() {
+  const url = [
+    `https://api.smartthings.com/v1/devices/${AIR_DEVICE_NUM}/components/main/capabilities/airConditionerFanMode/status`,
+  ]
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${SMARTTHINGS_KEY}`, // SmartThings API Key를 여기에 입력하세요.
+    },
+  })
+
+  const data = await response.json()
+  const fanModeValue = data.fanMode.value
+
+  return fanModeValue
+}
+
+async function getBulbValues() {
+  const url = [
+    `https://api.smartthings.com/v1/devices/${BULB_DEVICE_NUM}/components/main/capabilities/colorControl/status`,
+  ]
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${SMARTTHINGS_KEY}`, // SmartThings API Key를 여기에 입력하세요.
+    },
+  })
+
+  const data = await response.json()
+  const bulbModeValue = data.hue.value
+
+  return bulbModeValue
+}
+
 // Express 라우터를 사용하는 경우, 아래와 같이 라우터 핸들러 함수를 생성할 수 있습니다.
 apiRouter.post('/get-switch-values', async (req, res) => {
   try {
     const switchValues = await getSwitchValues()
+
+    const fanModeValue = await getAirValues()
+
+    const bulbModeValue = await getBulbValues()
 
     const responseBody = {
       version: '2.0',
@@ -1122,7 +1168,13 @@ apiRouter.post('/get-switch-values', async (req, res) => {
         outputs: [
           {
             simpleText: {
-              text: `실시간 장치 작동 현황입니다. 모니터의 상태는 ${switchValues[0]}, 전등의 상태는 ${switchValues[1]}, 공기청정기의 상태는 ${switchValues[2]}입니다. 오늘도 즐거운 하루 보내세요.`,
+              text: `실시간 장치 작동 현황입니다.
+              
+              모니터 ${switchValues[0]}
+              전등 ${switchValues[1]}, 색상 ${bulbModeValue}
+              공기청정기 ${switchValues[2]}, 세기 ${fanModeValue}
+              
+              오늘도 즐거운 하루 보내세요.`,
             },
           },
         ],

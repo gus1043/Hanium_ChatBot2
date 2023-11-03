@@ -1050,7 +1050,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
           },
           {
             role: 'assistant',
-            content: '공기청정기 약풍 바꿔 줘',
+            content: '공기청정기를 약풍으로 바꿀게요!',
           },
           {
             role: 'user',
@@ -1059,7 +1059,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
           },
           {
             role: 'assistant',
-            content: '전등 꺼 줘',
+            content: '전등을 끌게요!',
           },
           { role: 'user', content: msg },
         ],
@@ -1085,7 +1085,6 @@ apiRouter.post('/chatgpt', async function (req, res) {
 
     try {
       const resGPT = await getResponse(utterance)
-      console.log(resGPT)
       // 콜백 호출
       const callbackResponse = await axios.post(callbackUrl, {
         version: '2.0',
@@ -1107,6 +1106,38 @@ apiRouter.post('/chatgpt', async function (req, res) {
       }
     } catch (error) {
       console.error('API 호출 또는 Callback 호출 중 에러:', error)
+    }
+
+    if (
+      resGPT.includes('공기청정기') &&
+      (resGPT.includes('약풍') || resGPT.includes('약하게'))
+    ) {
+      await axios.post('/controlair-mid')
+    }
+
+    if (
+      resGPT.includes('공기청정기') &&
+      (resGPT.includes('강풍') || resGPT.includes('강하게'))
+    ) {
+      await axios.post('/controlair-high')
+    }
+
+    if (resGPT.includes('공기청정기') && resGPT.includes('수면풍')) {
+      await axios.post('/controlair-sleep')
+    }
+
+    if (
+      resGPT.includes('공기청정기') &&
+      (resGPT.includes('켜') || resGPT.includes('켤'))
+    ) {
+      await axios.post('/controlair-on')
+    }
+
+    if (
+      resGPT.includes('공기청정기') &&
+      (resGPT.includes('꺼') || resGPT.includes('끌'))
+    ) {
+      await axios.post('/controlair-off')
     }
   }
 })

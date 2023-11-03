@@ -1021,10 +1021,14 @@ apiRouter.post('/chatgpt', async function (req, res) {
     res.status(200).send({
       version: '2.0',
       useCallback: true,
-      template: {},
+      template: {
+        outputs: [
+          {
+            simpleText: { text: '답장' },
+          },
+        ],
+      },
     })
-
-    const resGPT = await getResponse(utterance)
 
     async function getResponse(msg) {
       const data = {
@@ -1047,10 +1051,15 @@ apiRouter.post('/chatgpt', async function (req, res) {
 
         const result1 = response.data.choices[0].message.content
         return result1
-      } catch {}
+      } catch {
+        console.error('Error in getResponse:', error)
+        throw error
+      }
     }
 
     try {
+      const resGPT = await getResponse(utterance)
+      console.log(resGPT)
       // 콜백 호출
       const callbackResponse = await axios.post(callbackUrl, {
         version: '2.0',

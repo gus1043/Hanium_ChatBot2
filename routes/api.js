@@ -65,7 +65,7 @@ apiRouter.post('/controlbulb-on', async function (req, res) {
               title: '발표장에 있는 전등의 전원이 켜졌어요.',
               thumbnail: {
                 imageUrl:
-                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/lightoff.png',
+                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/lighton.png',
               },
             },
           },
@@ -129,7 +129,7 @@ apiRouter.post('/controlbulb-off', async function (req, res) {
               title: '발표장에 있는 전등의 전원이 켜졌어요.',
               thumbnail: {
                 imageUrl:
-                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/lighton.png',
+                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/lightoff.png',
               },
             },
           },

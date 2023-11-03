@@ -126,7 +126,7 @@ apiRouter.post('/controlbulb-off', async function (req, res) {
         outputs: [
           {
             basicCard: {
-              title: '발표장에 있는 전등의 전원이 켜졌어요.',
+              title: '발표장에 있는 전등의 전원이 꺼졌어요.',
               thumbnail: {
                 imageUrl:
                   'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/lightoff.png',
@@ -1168,9 +1168,7 @@ apiRouter.post('/get-switch-values', async (req, res) => {
         outputs: [
           {
             simpleText: {
-              text: `실시간 장치 작동 현황입니다.
-              
-              모니터 ${switchValues[0]}\n전등 ${switchValues[1]}, 색상 ${bulbModeValue}\n공기청정기 ${switchValues[2]}, 세기 ${fanModeValue}\n오늘도 즐거운 하루 보내세요.`,
+              text: `실시간 장치 작동 현황입니다.\ㅜ\ㅜ모니터 ${switchValues[0]}\n전등 ${switchValues[1]}, 색상 ${bulbModeValue}\n공기청정기 ${switchValues[2]}, 세기 ${fanModeValue}\n\n오늘도 즐거운 하루 보내세요.`,
             },
           },
         ],

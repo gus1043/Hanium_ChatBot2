@@ -1085,49 +1085,55 @@ apiRouter.post('/chatgpt', async function (req, res) {
   }
 })
 
-// // API 엔드포인트 경로
-// apiRouter.get('/get-switch-values', async (req, res) => {
-//   try {
-//     const urls = [
-//       `https://api.smartthings.com/v1/devices/${MON_DEVICE_NUM}/components/main/capabilities/switch/status`,
-//       `https://api.smartthings.com/v1/devices/${BULB_DEVICE_NUM}/components/main/capabilities/switch/status`,
-//       `https://api.smartthings.com/v1/devices/${AIR_DEVICE_NUM}/components/main/capabilities/switch/status`,
-//     ]
+async function getSwitchValues() {
+  const urls = [
+    `https://api.smartthings.com/v1/devices/${MON_DEVICE_NUM}/components/main/capabilities/switch/status`,
+    `https://api.smartthings.com/v1/devices/${BULB_DEVICE_NUM}/components/main/capabilities/switch/status`,
+    `https://api.smartthings.com/v1/devices/${AIR_DEVICE_NUM}/components/main/capabilities/switch/status`,
+  ]
 
-//     const switchValues = []
+  const switchValues = []
 
-//     for (const url of urls) {
-//       const response = await fetch(url, {
-//         headers: {
-//           Authorization: `Bearer ${SMARTTHINGS_KEY}`, // SmartThings API Key를 여기에 입력하세요.
-//         },
-//       })
+  for (const url of urls) {
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${SMARTTHINGS_KEY}`, // SmartThings API Key를 여기에 입력하세요.
+      },
+    })
 
-//       if (response.ok) {
-//         const data = await response.json()
-//         const value = data.switch.value
-//         switchValues.push(value)
-//       }
-//     }
+    if (response.ok) {
+      const data = await response.json()
+      const value = data.switch.value
+      switchValues.push(value)
+    }
+  }
 
-//     const responseBody = {
-//       version: '2.0',
-//       template: {
-//         outputs: [
-//           {
-//             simpleText: {
-//               text: `실시간 장치 작동 현황입니다. 모니터의 상태는 ${switchValues[0]}, 전등의 상태는 ${switchValues[1]}, 공기청정기의 상태는 ${switchValues[2]}입니다. 오늘도 즐거운 하루 보내세요.`,
-//             },
-//           },
-//         ],
-//       },
-//     }
+  return switchValues
+}
 
-//     res.status(200).send(responseBody)
-//   } catch (error) {
-//     console.error('오류가 발생했습니다.', error)
-//     res.status(500).send('오류가 발생했습니다.')
-//   }
-// })
+// Express 라우터를 사용하는 경우, 아래와 같이 라우터 핸들러 함수를 생성할 수 있습니다.
+apiRouter.post('/get-switch-values', async (req, res) => {
+  try {
+    const switchValues = await getSwitchValues()
+
+    const responseBody = {
+      version: '2.0',
+      template: {
+        outputs: [
+          {
+            simpleText: {
+              text: `실시간 장치 작동 현황입니다. 모니터의 상태는 ${switchValues[0]}, 전등의 상태는 ${switchValues[1]}, 공기청정기의 상태는 ${switchValues[2]}입니다. 오늘도 즐거운 하루 보내세요.`,
+            },
+          },
+        ],
+      },
+    }
+
+    res.status(200).send(responseBody)
+  } catch (error) {
+    console.error('오류가 발생했습니다.', error)
+    res.status(500).send('오류가 발생했습니다.')
+  }
+})
 
 module.exports = apiRouter

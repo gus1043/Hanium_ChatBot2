@@ -1153,14 +1153,43 @@ async function getBulbValues() {
   return bulbModeValue
 }
 
+function mapFanMode(fanModeValue) {
+  switch (fanModeValue) {
+    case 'sleep':
+      return '수면풍'
+    case 'low':
+      return '미풍'
+    case 'medium':
+      return '약풍'
+    case 'high':
+      return '강풍'
+    default:
+      return '알 수 없음' // 다른 값일 경우에 대한 기본값
+  }
+}
+
+function mapBulbMode(bulbModeValue) {
+  if (bulbModeValue >= 113 && bulbModeValue <= 117) {
+    return '연한 노란색'
+  } else if (bulbModeValue >= 148 && bulbModeValue <= 152) {
+    return '흰색'
+  } else if (bulbModeValue >= 78 && bulbModeValue <= 82) {
+    return '분홍색'
+  } else {
+    return '알 수 없음' // 다른 값일 경우에 대한 기본값
+  }
+}
+
 // Express 라우터를 사용하는 경우, 아래와 같이 라우터 핸들러 함수를 생성할 수 있습니다.
 apiRouter.post('/get-switch-values', async (req, res) => {
   try {
     const switchValues = await getSwitchValues()
 
     const fanModeValue = await getAirValues()
+    const mappedValue = mapFanMode(fanModeValue)
 
     const bulbModeValue = await getBulbValues()
+    const mappedValue2 = mapBulbMode(bulbModeValue)
 
     const responseBody = {
       version: '2.0',
@@ -1168,7 +1197,7 @@ apiRouter.post('/get-switch-values', async (req, res) => {
         outputs: [
           {
             simpleText: {
-              text: `실시간 장치 작동 현황입니다.\n\n모니터 ${switchValues[0]}\n전등 ${switchValues[1]}, 색상 ${bulbModeValue}\n공기청정기 ${switchValues[2]}, 세기 ${fanModeValue}\n\n오늘도 즐거운 하루 보내세요.`,
+              text: `실시간 장치 작동 현황입니다.\n\n모니터 ${switchValues[0]}\n전등 ${switchValues[1]}, 색상 ${mappedValue2}\n공기청정기 ${switchValues[2]}, 세기 ${mappedValue}\n\n오늘도 즐거운 하루 보내세요.`,
             },
           },
         ],

@@ -1021,6 +1021,9 @@ apiRouter.post('/chatgpt', async function (req, res) {
     res.status(200).send({
       version: '2.0',
       useCallback: true,
+      data: {
+        text: '챗봇이 고민하고 있습니다.',
+      },
     })
 
     async function getResponse(msg) {
@@ -1081,77 +1084,6 @@ apiRouter.post('/chatgpt', async function (req, res) {
     }
   }
 })
-
-// const { userRequest } = req.body
-// const utterance = userRequest.utterance
-
-//   const callbackUrl = userRequest.callbackUrl
-//   const request_data = req.body
-
-//   apiRouter.post(callbackUrl, {
-//     version: '2.0',
-//     template: {
-//       outputs: [
-//         {
-//           simpleText: {
-//             text: request_data.result,
-//           },
-//         },
-//       ],
-//     },
-//   })
-//   res.send('OK')
-
-// const data = {
-//   model: 'gpt-3.5-turbo',
-//   messages: [{ role: 'user', content: utterance }],
-// }
-//   try {
-// const response = await axios.post(
-//   'https://api.openai.com/v1/chat/completions',
-//   data,
-//   {
-//     headers: {
-//       'Content-Type': 'application/json',
-//       Authorization: `Bearer ${OPENAI_API_KEY}`,
-//     },
-//     timeout: 2000,
-//   },
-// )
-
-//     const result1 = await response.data.choices[0].message.content
-//     const responseBody = {
-//       version: '2.0',
-//       useCallback: true,
-//       template: {
-//         outputs: [
-//           {
-//             simpleText: {
-//               text: result1,
-//             },
-//           },
-//         ],
-//       },
-//     }
-//     // 변환된 응답 보내기
-//     res.status(200).send(responseBody)
-//   } catch (error) {
-//     if (error.code === 'ECONNABORTED') {
-//       res.send({
-//         version: '2.0',
-//         useCallback: true,
-//       })
-//     }
-//   }
-// } catch (error) {
-//   console.error('Error calling OpenAI API:')
-//   console.error('Error message:', error.message)
-//   if (error.response) {
-//     console.error('Response status:', error.response.status)
-//     console.error('Response data:', error.response.data)
-//   }
-//   res.status(500).send('Error generating response')
-// }
 
 // // API 엔드포인트 경로
 // apiRouter.get('/get-switch-values', async (req, res) => {

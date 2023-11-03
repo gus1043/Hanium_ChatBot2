@@ -1041,25 +1041,33 @@ apiRouter.post('/chatgpt', async function (req, res) {
           {
             role: 'system',
             content:
-              '당신은 모든 분야의 전문가이며, 대답이 정말 빠릅니다. 20대의 친근한 여성처럼 친절하게 대답해 주세요. (조건: 10초 이내로) \n 그리고 사용자가 장치 제어 명령을 내렸다면, 1. 어떤 장치를 2. 어떻게 제어하라고 명령했는지만 출력해.',
+              "당신은 모든 분야의 전문가이며, 대답이 정말 빠릅니다. 20대의 친근한 여성처럼 친절하게 대답해 주세요. (조건: 10초 이내로) \n 그리고 사용자가 장치 제어 명령을 내렸다면, '아직 학습되지 않은 문장입니다. 비슷한 문장으로 다시 시도해 주세요.' 라고 출력해.",
+          },
+          { role: 'user', content: '집에 있는 공기청정기 꺼 줘' },
+          {
+            role: 'assistant',
+            content:
+              '아직 학습되지 않은 문장입니다. 비슷한 문장으로 다시 시도해 주세요.',
           },
           {
             role: 'user',
             content:
-              '아니 오늘 왜 이러지? 공기청정기 소리가 너무 시끄러우니까 약풍으로 바꿔 줘',
+              '내가 어제 깜빡하고 불을 안 끄고 잤나 봐. 전등 좀 꺼 줄래? 너무 눈부셔.',
           },
           {
             role: 'assistant',
-            content: '공기청정기를 약풍으로 바꿀게요!',
+            content:
+              '아직 학습되지 않은 문장입니다. 비슷한 문장으로 다시 시도해 주세요.',
           },
           {
             role: 'user',
             content:
-              '방금 일어났는데 내가 어제 깜빡하고 전등을 켜고 잔 것 같아. 전등 꺼 줘.',
+              '나 지금 밖에 나왔는데 깜빡하고 모니터를 켜고 나온 것 같아. 모니터 좀 꺼 줄래?',
           },
           {
             role: 'assistant',
-            content: '전등을 끌게요!',
+            content:
+              '아직 학습되지 않은 문장입니다. 비슷한 문장으로 다시 시도해 주세요.',
           },
           { role: 'user', content: msg },
         ],
@@ -1085,6 +1093,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
 
     try {
       const resGPT = await getResponse(utterance)
+      console.log(resGPT)
       // 콜백 호출
       const callbackResponse = await axios.post(callbackUrl, {
         version: '2.0',
@@ -1098,43 +1107,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
           ],
         }, // 외부 API로부터 받은 데이터
       })
-      if (
-        resGPT.includes('공기청정기를') &&
-        (resGPT.includes('약풍으로') || resGPT.includes('약하게'))
-      ) {
-        axios.post('/controlair-mid')
-      }
 
-      if (
-        resGPT.includes('공기청정기를') &&
-        (resGPT.includes('강풍으로') || resGPT.includes('강하게'))
-      ) {
-        axios.post('/controlair-high')
-      }
-
-      if (resGPT.includes('공기청정기를') && resGPT.includes('수면풍으로')) {
-        axios.post('/controlair-sleep')
-      }
-
-      if (
-        resGPT.includes('공기청정기를') &&
-        (resGPT.includes('켤게요') ||
-          resGPT.includes('켜서') ||
-          resGPT.includes('켜드릴게요') ||
-          resGPT.includes('켤게요!'))
-      ) {
-        axios.post('/controlair-on')
-      }
-
-      if (
-        resGPT.includes('공기청정기') &&
-        (resGPT.includes('끌게요') ||
-          resGPT.includes('꺼서') ||
-          resGPT.includes('꺼드릴게요') ||
-          resGPT.includes('끌게요!'))
-      ) {
-        await axios.post('/controlair-off')
-      }
       if (callbackResponse.status === 200) {
         console.log('Callback 호출 성공')
       } else {

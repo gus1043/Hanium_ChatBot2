@@ -1168,7 +1168,7 @@ apiRouter.post('/get-switch-values', async (req, res) => {
         outputs: [
           {
             simpleText: {
-              text: `실시간 장치 작동 현황입니다.\ㅜ\ㅜ모니터 ${switchValues[0]}\n전등 ${switchValues[1]}, 색상 ${bulbModeValue}\n공기청정기 ${switchValues[2]}, 세기 ${fanModeValue}\n\n오늘도 즐거운 하루 보내세요.`,
+              text: `실시간 장치 작동 현황입니다.\n\n모니터 ${switchValues[0]}\n전등 ${switchValues[1]}, 색상 ${bulbModeValue}\n공기청정기 ${switchValues[2]}, 세기 ${fanModeValue}\n\n오늘도 즐거운 하루 보내세요.`,
             },
           },
         ],

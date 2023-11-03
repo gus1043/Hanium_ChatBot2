@@ -1043,6 +1043,24 @@ apiRouter.post('/chatgpt', async function (req, res) {
             content:
               '당신은 모든 분야의 전문가이며, 대답이 정말 빠릅니다. 20대의 친근한 여성처럼 친절하게 대답해 주세요. (조건: 10초 이내로) \n 그리고 사용자가 장치 제어 명령을 내렸다면, 1. 어떤 장치를 2. 어떻게 제어하라고 명령했는지만 출력해.',
           },
+          {
+            role: 'user',
+            content:
+              '아니 오늘 왜 이러지? 공기청정기 소리가 너무 시끄러우니까 약풍으로 바꿔 줘',
+          },
+          {
+            role: 'assistant',
+            content: '공기청정기 약풍 바꿔 줘',
+          },
+          {
+            role: 'user',
+            content:
+              '방금 일어났는데 내가 어제 깜빡하고 전등을 켜고 잔 것 같아. 전등 꺼 줘.',
+          },
+          {
+            role: 'assistant',
+            content: '전등 꺼 줘',
+          },
           { role: 'user', content: msg },
         ],
       }

@@ -1025,7 +1025,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
         outputs: [
           {
             simpleText: {
-              text: '전등의 전원이 켜졌습니다.',
+              text: '성공.',
             },
           },
         ],
@@ -1035,7 +1035,14 @@ apiRouter.post('/chatgpt', async function (req, res) {
     async function getResponse(msg) {
       const data = {
         model: 'gpt-3.5-turbo',
-        messages: [{ role: 'user', content: msg }],
+        messages: [
+          {
+            role: 'assistant',
+            content:
+              '넌 모든 분야의 전문가이며, 대답이 정말 빨라. 친절하게 대답해 줘.',
+          },
+          { role: 'user', content: msg },
+        ],
       }
 
       try {

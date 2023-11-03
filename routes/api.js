@@ -1056,7 +1056,6 @@ apiRouter.post('/chatgpt', async function (req, res) {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${OPENAI_API_KEY}`,
             },
-            timeout: 200000,
           },
         )
 

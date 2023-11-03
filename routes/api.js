@@ -1062,9 +1062,14 @@ apiRouter.post('/chatgpt', async function (req, res) {
       // 콜백 호출
       const callbackResponse = await axios.post(callbackUrl, {
         version: '2.0',
-        useCallback: true,
-        data: {
-          text: resGPT,
+        template: {
+          outputs: [
+            {
+              simpleText: {
+                text: resGPT,
+              },
+            },
+          ],
         }, // 외부 API로부터 받은 데이터
       })
 

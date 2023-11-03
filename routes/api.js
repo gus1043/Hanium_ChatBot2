@@ -1024,7 +1024,9 @@ apiRouter.post('/chatgpt', async function (req, res) {
       template: {
         outputs: [
           {
-            simpleText: { text: '답장' },
+            simpleText: {
+              text: '전등의 전원이 켜졌습니다.',
+            },
           },
         ],
       },
@@ -1051,10 +1053,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
 
         const result1 = response.data.choices[0].message.content
         return result1
-      } catch {
-        console.error('Error in getResponse:', error)
-        throw error
-      }
+      } catch {}
     }
 
     try {

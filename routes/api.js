@@ -1041,7 +1041,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
           {
             role: 'system',
             content:
-              'You are an expert in every field, and you answer really fast. Please answer kindly. But dont answer for the utterance that includes the appliance control request. Just tell them to change the sentence and give them a control command again. (Condition: Within 10 seconds, using Korean)',
+              'You are an expert in every field, and you answer really fast. Please answer kindly. But dont answer for the utterance that includes the appliance control request and Just tell them to change the sentence and give them a control command again. (Condition: Within 10 seconds, using Korean)',
           },
           { role: 'user', content: msg },
         ],

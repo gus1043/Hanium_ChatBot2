@@ -472,7 +472,7 @@ apiRouter.post('/controlair-low', async function (req, res) {
               description: '약한 바람으로 조용하게 공기를 정화할게요.',
               thumbnail: {
                 imageUrl:
-                  ' https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/4.jpg',
+                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/22.png',
               },
             },
           },

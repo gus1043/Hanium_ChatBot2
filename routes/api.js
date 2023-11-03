@@ -1041,7 +1041,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
           {
             role: 'system',
             content:
-              'You are an expert in every field, and you answer really fast. Please answer kindly like a friendly woman in her 20s. But dont answer for the utterance that includes the appliance control request. Just tell them to change the sentence and give them a control command again. (Condition: Within 7 seconds, using Korean)',
+              'You are an expert in every field, and you answer really fast. Please answer kindly like a friendly woman in her 20s. But dont answer for the utterance that includes the appliance control request. Just tell them to change the sentence and give them a control command again. (Condition: Within 10 seconds, using Korean)',
           },
           { role: 'user', content: msg },
         ],
@@ -1056,12 +1056,21 @@ apiRouter.post('/chatgpt', async function (req, res) {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${OPENAI_API_KEY}`,
             },
+            timeout: 60000,
           },
         )
 
         const result1 = response.data.choices[0].message.content
         return result1
-      } catch {}
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.code === 'ECONNABORTED') {
+          // timeout 예외가 발생한 경우
+          return '챗봇이 바쁜 것 같아요. 다시 한번 질문해 주세요'
+        } else {
+          // 다른 예외가 발생한 경우에 대한 처리도 필요할 수 있습니다.
+          console.error(error)
+        }
+      }
     }
 
     try {

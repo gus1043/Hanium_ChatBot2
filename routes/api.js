@@ -1098,7 +1098,43 @@ apiRouter.post('/chatgpt', async function (req, res) {
           ],
         }, // 외부 API로부터 받은 데이터
       })
+      if (
+        resGPT.includes('공기청정기를') &&
+        (resGPT.includes('약풍으로') || resGPT.includes('약하게'))
+      ) {
+        axios.post('/controlair-mid')
+      }
 
+      if (
+        resGPT.includes('공기청정기를') &&
+        (resGPT.includes('강풍으로') || resGPT.includes('강하게'))
+      ) {
+        axios.post('/controlair-high')
+      }
+
+      if (resGPT.includes('공기청정기를') && resGPT.includes('수면풍으로')) {
+        axios.post('/controlair-sleep')
+      }
+
+      if (
+        resGPT.includes('공기청정기를') &&
+        (resGPT.includes('켤게요') ||
+          resGPT.includes('켜서') ||
+          resGPT.includes('켜드릴게요') ||
+          resGPT.includes('켤게요!'))
+      ) {
+        axios.post('/controlair-on')
+      }
+
+      if (
+        resGPT.includes('공기청정기') &&
+        (resGPT.includes('끌게요') ||
+          resGPT.includes('꺼서') ||
+          resGPT.includes('꺼드릴게요') ||
+          resGPT.includes('끌게요!'))
+      ) {
+        await axios.post('/controlair-off')
+      }
       if (callbackResponse.status === 200) {
         console.log('Callback 호출 성공')
       } else {
@@ -1106,44 +1142,6 @@ apiRouter.post('/chatgpt', async function (req, res) {
       }
     } catch (error) {
       console.error('API 호출 또는 Callback 호출 중 에러:', error)
-    }
-
-    if (
-      resGPT.includes('공기청정기를') &&
-      (resGPT.includes('약풍으로') || resGPT.includes('약하게'))
-    ) {
-      axios.post('/controlair-mid')
-    }
-
-    if (
-      resGPT.includes('공기청정기를') &&
-      (resGPT.includes('강풍으로') || resGPT.includes('강하게'))
-    ) {
-      axios.post('/controlair-high')
-    }
-
-    if (resGPT.includes('공기청정기를') && resGPT.includes('수면풍으로')) {
-      axios.post('/controlair-sleep')
-    }
-
-    if (
-      resGPT.includes('공기청정기를') &&
-      (resGPT.includes('켤게요') ||
-        resGPT.includes('켜서') ||
-        resGPT.includes('켜드릴게요') ||
-        resGPT.includes('켤게요!'))
-    ) {
-      axios.post('/controlair-on')
-    }
-
-    if (
-      resGPT.includes('공기청정기') &&
-      (resGPT.includes('끌게요') ||
-        resGPT.includes('꺼서') ||
-        resGPT.includes('꺼드릴게요') ||
-        resGPT.includes('끌게요!'))
-    ) {
-      await axios.post('/controlair-off')
     }
   }
 })

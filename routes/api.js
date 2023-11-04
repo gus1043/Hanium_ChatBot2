@@ -812,9 +812,12 @@ apiRouter.post('/controlmonitor-off', async function (req, res) {
 // '/chatgpt' 엔드포인트에 대한 POST 요청 핸들러
 apiRouter.post('/chatgpt', async function (req, res) {
   const { userRequest } = req.body
-  const utterance = userRequest.utterance
+  // const utterance = userRequest.utterance
 
-  const callbackUrl = req.body.userRequest.callbackUrl
+  // const callbackUrl = req.body.userRequest.callbackUrl
+
+  const utterance =
+    '나 오늘 너무 속상하고 슬펐어. 조명 색을 바꿔서 날 위로해 줘.'
 
   function containsKeywords(utterance) {
     const keywords = [
@@ -837,13 +840,13 @@ apiRouter.post('/chatgpt', async function (req, res) {
   if (containsKeywords(utterance)) {
     // 전등 제어 + 기분 관련 텍스트 들어오면 실행
 
-    db.query(
-      'insert into count2 (date, lightCnt, lightDate) values(CURRENT_DATE, lightCnt+1, now()) on duplicate key update lightCnt = lightCnt+1, lightDate = CURRENT_TIMESTAMP',
-      function (err, results, fields) {
-        if (err) throw err
-        console.log(results)
-      },
-    )
+    // db.query(
+    //   'insert into count2 (date, lightCnt, lightDate) values(CURRENT_DATE, lightCnt+1, now()) on duplicate key update lightCnt = lightCnt+1, lightDate = CURRENT_TIMESTAMP',
+    //   function (err, results, fields) {
+    //     if (err) throw err
+    //     console.log(results)
+    //   },
+    // )
 
     const resText = await translateText(utterance)
     console.log('resText:', resText)
@@ -1008,7 +1011,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
 
         const weightedSum = response.data.sentences.reduce(
           (sum, sentence, index) => {
-            const weight = index === 0 ? 1.1 : 1 // 첫 번째 문장에 1.4 가중치, 나머지에는 1 가중치
+            const weight = index === 0 ? 2 : 1 // 첫 번째 문장에 1.4 가중치, 나머지에는 1 가중치
             return sum + sentence.sentiment.score * weight
           },
           0,

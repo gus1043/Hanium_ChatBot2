@@ -1008,7 +1008,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
 
         const weightedSum = response.data.sentences.reduce(
           (sum, sentence, index) => {
-            const weight = index === 0 ? 1.4 : 1 // 첫 번째 문장에 1.4 가중치, 나머지에는 1 가중치
+            const weight = index === 0 ? 1.1 : 1 // 첫 번째 문장에 1.4 가중치, 나머지에는 1 가중치
             return sum + sentence.sentiment.score * weight
           },
           0,

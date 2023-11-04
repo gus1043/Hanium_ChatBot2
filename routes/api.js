@@ -1036,12 +1036,12 @@ apiRouter.post('/chatgpt', async function (req, res) {
 
     async function getResponse(msg) {
       const data = {
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4',
         messages: [
           {
             role: 'system',
             content:
-              'You are an expert in every field, and you answer really fast. If utterance that includes the appliance control request, Just tell them to change the sentence and give them a control command again. make kindly and cheerfully respond to any other questions, just like a friendly young woman in her 20s would.(Condition: Within 10 seconds, using Korean)',
+              'You are an expert in every field, and you answer really fast. If utterance that includes the appliance control request, tell them to change the sentence and give them a control command again. make kindly and cheerfully respond to any other questions, just like a friendly young woman in her 20s would.(Condition: Within 10 seconds, using Korean)',
           },
           { role: 'user', content: msg },
         ],

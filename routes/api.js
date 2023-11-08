@@ -61,8 +61,12 @@ apiRouter.post('/controlbulb-on', async function (req, res) {
       template: {
         outputs: [
           {
-            simpleText: {
-              text: '전등의 전원이 켜졌습니다.',
+            basicCard: {
+              title: '발표장에 있는 전등의 전원이 켜졌어요.',
+              thumbnail: {
+                imageUrl:
+                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/lighton.png',
+              },
             },
           },
         ],
@@ -121,8 +125,12 @@ apiRouter.post('/controlbulb-off', async function (req, res) {
       template: {
         outputs: [
           {
-            simpleText: {
-              text: '전등의 전원이 꺼졌습니다.',
+            basicCard: {
+              title: '발표장에 있는 전등의 전원이 꺼졌어요.',
+              thumbnail: {
+                imageUrl:
+                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/lightoff.png',
+              },
             },
           },
         ],
@@ -472,7 +480,7 @@ apiRouter.post('/controlair-low', async function (req, res) {
               description: '약한 바람으로 조용하게 공기를 정화할게요.',
               thumbnail: {
                 imageUrl:
-                  ' https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/4.jpg',
+                  'https://imgae-bucket.s3.ap-northeast-2.amazonaws.com/22.png',
               },
             },
           },
@@ -806,6 +814,8 @@ apiRouter.post('/chatgpt', async function (req, res) {
   const { userRequest } = req.body
   const utterance = userRequest.utterance
 
+  const callbackUrl = req.body.userRequest.callbackUrl
+
   function containsKeywords(utterance) {
     const keywords = [
       '조명',
@@ -998,7 +1008,7 @@ apiRouter.post('/chatgpt', async function (req, res) {
 
         const weightedSum = response.data.sentences.reduce(
           (sum, sentence, index) => {
-            const weight = index === 0 ? 1.4 : 1 // 첫 번째 문장에 1.4 가중치, 나머지에는 1 가중치
+            const weight = index === 0 ? 2 : 1 // 첫 번째 문장에 1.4 가중치, 나머지에는 1 가중치
             return sum + sentence.sentiment.score * weight
           },
           0,
@@ -1016,122 +1026,178 @@ apiRouter.post('/chatgpt', async function (req, res) {
       }
     }
   } else {
-    try {
-      // OpenAI API에 메시지 전달하고 응답 받기
-      // const resGPT = await getResponse(utterance)
+    res.status(200).send({
+      version: '2.0',
+      useCallback: true,
+      data: {
+        text: '챗봇이 고민하고 있습니다.',
+      },
+    })
 
-      // const responseMessage = resGPT
-      //    '챗봇이 답을 작성하고 있어요. 잠시만 기다려 주세요.'
-      //   : '챗봇이 답을 생성하지 못했어요. 다시 시도해 주세요.'
-
-      // const { userRequest } = req.body
-      // const utterance = userRequest.utterance
-
-      // ChatGPT 응답을 카카오톡 플러스친구 API에 맞는 형식으로 변환
-      const responseBody = {
-        version: '2.0',
-        useCallback: true,
-        data: {
-          text: '잠시만 기다려 주십쇼',
-        },
+    async function getResponse(msg) {
+      const data = {
+        model: 'gpt-4',
+        messages: [
+          {
+            role: 'system',
+            content:
+              'You are an expert in every field, and you answer really fast. If utterance that includes the appliance control request, tell them to change the sentence and give them a control command again. make kindly and cheerfully respond to any other questions, just like a friendly young woman in her 20s would.(Condition: Within 10 seconds, using Korean)',
+          },
+          { role: 'user', content: msg },
+        ],
       }
 
-      res.status(200).send(responseBody)
-    } catch (error) {
-      // 오류 정보를 더 자세하게 출력하기
-      console.error('Error calling OpenAI API:')
-      console.error('Error message:', error.message)
-      if (error.response) {
-        console.error('Response status:', error.response.status)
-        console.error('Response data:', error.response.data)
+      try {
+        const response = await axios.post(
+          'https://api.openai.com/v1/chat/completions',
+          data,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${OPENAI_API_KEY}`,
+            },
+            timeout: 60000,
+          },
+        )
+
+        const result1 = response.data.choices[0].message.content
+        return result1
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.code === 'ECONNABORTED') {
+          // timeout 예외가 발생한 경우
+          return '챗봇이 바쁜 것 같아요. 다시 한번 질문해 주세요'
+        } else {
+          // 다른 예외가 발생한 경우에 대한 처리도 필요할 수 있습니다.
+          console.error(error)
+        }
       }
-      res.status(500).send('Error generating response')
     }
 
-    console.log(userRequest)
-
-    apiRouter.post('/callback_request', async (req, res) => {
-      try {
-        const resGPT = await getResponse(utterance)
-
-        const callbackUrl = await userRequest.callbackUrl
-
-        const response = await axios.post(callbackUrl, {
-          version: '2.0',
-          template: {
-            outputs: [
-              {
-                simpleText: {
-                  text: resGPT,
-                },
+    try {
+      const resGPT = await getResponse(utterance)
+      console.log(resGPT)
+      // 콜백 호출
+      const callbackResponse = await axios.post(callbackUrl, {
+        version: '2.0',
+        template: {
+          outputs: [
+            {
+              simpleText: {
+                text: resGPT,
               },
-            ],
-          },
-        })
+            },
+          ],
+        }, // 외부 API로부터 받은 데이터
+      })
 
-        console.log(response.status, response.data)
-
-        res.status(200).send('OK')
-      } catch (error) {
-        console.error('Error sending callback:', error.message)
-        res.status(500).send('Error sending callback')
+      if (callbackResponse.status === 200) {
+        console.log('Callback 호출 성공')
+      } else {
+        console.log('Callback 호출 실패:', callbackResponse.status)
       }
-    })
+    } catch (error) {
+      console.error('API 호출 또는 Callback 호출 중 에러:', error)
+    }
   }
 })
 
-// OpenAI API로 메시지를 보내고 응답을 받는 함수
-async function getResponse(msg) {
-  const data = {
-    model: 'gpt-3.5-turbo',
-    messages: [{ role: 'user', content: msg }],
+async function getSwitchValues() {
+  const urls = [
+    `https://api.smartthings.com/v1/devices/${MON_DEVICE_NUM}/components/main/capabilities/switch/status`,
+    `https://api.smartthings.com/v1/devices/${BULB_DEVICE_NUM}/components/main/capabilities/switch/status`,
+    `https://api.smartthings.com/v1/devices/${AIR_DEVICE_NUM}/components/main/capabilities/switch/status`,
+  ]
+
+  const switchValues = []
+
+  for (const url of urls) {
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${SMARTTHINGS_KEY}`, // SmartThings API Key를 여기에 입력하세요.
+      },
+    })
+
+    if (response.ok) {
+      const data = await response.json()
+      const value = data.switch.value
+      switchValues.push(value)
+    }
   }
 
-  try {
-    const response = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
-      data,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
-        },
-        timeout: 200000,
-      },
-    )
+  return switchValues
+}
 
-    const result1 = response.data.choices[0].message.content
-    return result1
-  } catch (e) {
-    console.error('OpenAI API 오류:', e.response?.data?.error || e.message || e)
-    throw e
+async function getAirValues() {
+  const url = [
+    `https://api.smartthings.com/v1/devices/${AIR_DEVICE_NUM}/components/main/capabilities/airConditionerFanMode/status`,
+  ]
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${SMARTTHINGS_KEY}`, // SmartThings API Key를 여기에 입력하세요.
+    },
+  })
+
+  const data = await response.json()
+  const fanModeValue = data.fanMode.value
+
+  return fanModeValue
+}
+
+async function getBulbValues() {
+  const url = [
+    `https://api.smartthings.com/v1/devices/${BULB_DEVICE_NUM}/components/main/capabilities/colorControl/status`,
+  ]
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${SMARTTHINGS_KEY}`, // SmartThings API Key를 여기에 입력하세요.
+    },
+  })
+
+  const data = await response.json()
+  const bulbModeValue = data.hue.value
+
+  return bulbModeValue
+}
+
+function mapFanMode(fanModeValue) {
+  switch (fanModeValue) {
+    case 'sleep':
+      return '수면풍'
+    case 'low':
+      return '미풍'
+    case 'medium':
+      return '약풍'
+    case 'high':
+      return '강풍'
+    default:
+      return '알 수 없음' // 다른 값일 경우에 대한 기본값
   }
 }
 
-// API 엔드포인트 경로
-apiRouter.get('/get-switch-values', async (req, res) => {
+function mapBulbMode(bulbModeValue) {
+  if (bulbModeValue >= 113 && bulbModeValue <= 117) {
+    return '연한 노란색'
+  } else if (bulbModeValue >= 148 && bulbModeValue <= 152) {
+    return '흰색'
+  } else if (bulbModeValue >= 78 && bulbModeValue <= 82) {
+    return '분홍색'
+  } else {
+    return '알 수 없음' // 다른 값일 경우에 대한 기본값
+  }
+}
+
+// Express 라우터를 사용하는 경우, 아래와 같이 라우터 핸들러 함수를 생성할 수 있습니다.
+apiRouter.post('/get-switch-values', async (req, res) => {
   try {
-    const urls = [
-      `https://api.smartthings.com/v1/devices/${MON_DEVICE_NUM}/components/main/capabilities/switch/status`,
-      `https://api.smartthings.com/v1/devices/${BULB_DEVICE_NUM}/components/main/capabilities/switch/status`,
-      `https://api.smartthings.com/v1/devices/${AIR_DEVICE_NUM}/components/main/capabilities/switch/status`,
-    ]
+    const switchValues = await getSwitchValues()
 
-    const switchValues = []
+    const fanModeValue = await getAirValues()
+    const mappedValue = mapFanMode(fanModeValue)
 
-    for (const url of urls) {
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${SMARTTHINGS_KEY}`, // SmartThings API Key를 여기에 입력하세요.
-        },
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        const value = data.switch.value
-        switchValues.push(value)
-      }
-    }
+    const bulbModeValue = await getBulbValues()
+    const mappedValue2 = mapBulbMode(bulbModeValue)
 
     const responseBody = {
       version: '2.0',
@@ -1139,7 +1205,7 @@ apiRouter.get('/get-switch-values', async (req, res) => {
         outputs: [
           {
             simpleText: {
-              text: `실시간 장치 작동 현황입니다. 모니터의 상태는 ${switchValues[0]}, 전등의 상태는 ${switchValues[1]}, 공기청정기의 상태는 ${switchValues[2]}입니다. 오늘도 즐거운 하루 보내세요.`,
+              text: `실시간 장치 작동 현황입니다.\n\n모니터 ${switchValues[0]}\n전등 ${switchValues[1]}, (색상: ${mappedValue2})\n공기청정기 ${switchValues[2]}, (세기: ${mappedValue})\n\n오늘도 즐거운 하루 보내세요!`,
             },
           },
         ],
